@@ -1,0 +1,41 @@
+{% extends 'base/default.html' %}
+{% set active_page ='user' %}
+{% block body %}
+<div class="col-md-12">
+    <div class="tile">
+        <h3 class="tile-title">Tabela de Estações</h3>
+        <div class="table table-responsive table-hover">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>MAC Adress</th>
+                        <th>Altitude</th>
+                        <th>Altura</th>
+                        <th>Altura Dossel</th>
+                        <th>Coordenadas</th>
+                        <th>Cod INMET</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for i in range(1,5) %}
+                    <tr>
+                        <td>24:F5:AA:5F:5A:34</td>
+                        <td>248m</td>
+                        <td>2m</td>
+                        <td>2m</td>                       
+                        <td>5656565656</td>
+                        <td>604</td>
+                        <td>
+                            <a class="btn btn-success" href={{ url_for('admin.form_station', id=i)  }}>Atualizar</a>
+                            <button class="btn btn-danger">Remover </button>
+                        </td>
+                    </tr>                
+                    {% endfor %}    
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

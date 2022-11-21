@@ -1,0 +1,43 @@
+{% extends 'base/default.html' %}
+{% set active_page ='user' %}
+{% block body %}
+<div class="col-md-12">
+    <div class="tile">
+        <div class="tile-title-w-btn">
+            <h3 class="title">Tabela de Usuarios</h3>
+            <p>
+                <a class="btn btn-primary icon-btn" href="{{ url_for('auth.register')}}"><i class="fa fa-plus"></i> Usuario
+                </a>
+            </p>
+        </div>
+        <div class="table table-responsive table-hover">
+            <table class="table" id="example">
+                <thead>
+                    <tr>
+                        <th>Nome</th>
+                        <th>Email</th>
+                        <th>Admin</th>
+                        <th>Estações</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for user in users %}
+                    <tr>
+                        <td>{{ user.user_name }}</td>
+                        <td>{{ user.email }}</td>
+                        <td>{{ 'Sim' if user.is_admin else 'Não' }}</td>
+                        <td><a class="btn btn-info" href="{{ url_for('admin.station', id=user.id) }}" title="Estações"><i class="fa-brands fa-watchman-monitoring"></i></a></td>
+                        <td>
+                            <a class="btn btn-success" href="{{ url_for('admin.edit_user', id=user.id) }}" title="Editar" ><i class="fas fa-edit"></i></a>
+                            <a class="btn btn-danger" title="Remover"><i class="fa-solid fa-trash"></i></a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+</div>
+{% endblock %}
