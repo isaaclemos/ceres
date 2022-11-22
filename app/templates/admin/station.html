@@ -1,12 +1,11 @@
-{% extends 'base/default.html' %}
-{% set active_page ='user' %}
-{% block body %}
+{% extends 'base/default.html' %} {% set active_page ='user' %} {% block body %}
 <div class="col-md-12">
     <div class="tile">
-        <div class="tile-title-w-btn">            
+        <div class="tile-title-w-btn">
             <h3 class="title">Tabela de Estações</h3>
             <p>
-                <a class="btn btn-primary icon-btn" href="{{ url_for('admin.new_station', id=user.id)}}"><i class="fa fa-plus"></i> Estação
+                <a class="btn btn-primary icon-btn" href="#" data-toggle="modal" data-target="#new_station"><i
+                        class="fa fa-plus"></i> Estação
                 </a>
             </p>
         </div>
@@ -29,17 +28,64 @@
                         <td>24:F5:AA:5F:5A:34</td>
                         <td>248m</td>
                         <td>2m</td>
-                        <td>2m</td>                       
+                        <td>2m</td>
                         <td>5656565656</td>
                         <td>604</td>
                         <td>
-                            <a class="btn btn-success" href="{{ url_for('admin.edit_station', id=i) }}" title="Editar" ><i class="fas fa-edit"></i></a>
+                            <a class="btn btn-success" href="{{ url_for('admin.edit_station', id=i) }}"
+                                title="Editar"><i class="fas fa-edit"></i></a>
                             <a class="btn btn-danger" title="Remover"><i class="fa-solid fa-trash"></i></a>
                         </td>
-                    </tr>                
-                    {% endfor %}    
+                    </tr>
+                    {% endfor %}
                 </tbody>
             </table>
+        </div>
+    </div>
+    <div class="modal fade" id="new_station" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Cadastrar nova Estaçãod do usuario</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form class="row">
+                        <div class="form-group col-md-6">
+                            <label class="control-label">MAC Adress</label>
+                            <input class="form-control" type="text" />
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label class="control-label">Coordenadas</label>
+                            <input class="form-control" type="text" />
+                        </div>
+                        <div class="form-group col-md-3">
+                            <label class="control-label">Altitude</label>
+                            <input class="form-control" type="number" />
+                        </div>
+                        <div class="form-group col-md-3">
+                            <label class="control-label">Altura</label>
+                            <input class="form-control" type="number" />
+                        </div>
+                        <div class="form-group col-md-3">
+                            <label class="control-label">Altura Dossel</label>
+                            <input class="form-control" type="number" />
+                        </div>
+                        <div class="form-group col-md-3">
+                            <label class="control-label">Cod INMET</label>
+                            <input class="form-control" type="text" />
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">
+                                Cancelar
+                            </button>
+                            <button type="submit" class="btn btn-primary">Salvar</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
         </div>
     </div>
 </div>

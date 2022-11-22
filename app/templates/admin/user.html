@@ -6,7 +6,8 @@
         <div class="tile-title-w-btn">
             <h3 class="title">Tabela de Usuarios</h3>
             <p>
-                <a class="btn btn-primary icon-btn" href="{{ url_for('auth.register')}}"><i class="fa fa-plus"></i> Usuario
+                <a class="btn btn-primary icon-btn" href="#" data-toggle="modal" data-target="#new_user">
+                    <i class="fa fa-plus"></i> Usuario
                 </a>
             </p>
         </div>
@@ -38,6 +39,51 @@
             </table>
         </div>
     </div>
-</div>
+    <!-- Modal -->
+    <div class="modal fade" id="new_user" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" >Cadastrar novo usuario</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form action="{{ url_for('auth.register')}}" method="Post" autocomplete="on">
+                        <div class="form-group">
+                            <label class="control-label">Nome</label>
+                            <input class="form-control" name="user_name" type="text" 
+                                placeholder="Digite o nome do usuário">
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label">Email</label>
+                            <input class="form-control" name="email" type="text"
+                                placeholder="Digite o email de acesso">
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label">Senha</label>
+                            <input class="form-control" name="password1" type="password" placeholder="Digite a senha">
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label">Repita senha</label>
+                            <input class="form-control" name="password2" type="password" placeholder="Repita a senha">
+                        </div>
+                        <div class="form-group">
+                            <div class="form-check">
+                                <label class="form-check-label">
+                                    <input class="form-check-input" type="checkbox" >Admin
+                                </label>
+                            </div>
+                        </div>                        
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-primary">Salvar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 </div>
 {% endblock %}
