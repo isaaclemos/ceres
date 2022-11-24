@@ -1,7 +1,6 @@
-from os import path
 from flask import Flask
 from flask_login import LoginManager
-from app.database import db
+from app.database import db, create_database
 from app.models import *
 from app.controllers import *
 
@@ -23,7 +22,7 @@ def create_app():
     for c in controllers:
         app.register_blueprint(c)
     
-    # create_database(app)
+    create_database(app, DB_NAME)
 
     login_manager = LoginManager()
     login_manager.login_view = 'auth.login'
@@ -37,9 +36,3 @@ def create_app():
 
     return app
 
-
-def create_database(app):
-    if not path.exists(f'{app.root_path}/{ DB_NAME}'):
-        with app.app_context():
-            db.create_all(app=app)
-        print('Created Database!')
