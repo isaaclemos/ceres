@@ -23,18 +23,18 @@
                     </tr>
                 </thead>
                 <tbody>
-                    {% for i in range(1,5) %}
+                    {% for station in stations %}
                     <tr>
-                        <td>24:F5:AA:5F:5A:34</td>
-                        <td>248m</td>
-                        <td>2m</td>
-                        <td>2m</td>
-                        <td>5656565656</td>
-                        <td>604</td>
+                        <td>{{station.mac_address}}</td>
+                        <td>{{station.altitude}}m</td>
+                        <td>{{station.altura}}m</td>
+                        <td>{{station.altura_dossel}}m</td>
+                        <td>{{station.coordenadas}}</td>
+                        <td>{{station.cod_inmet}}</td>
                         <td>
-                            <a class="btn btn-success" href="{{ url_for('admin.edit_station', id=i) }}"
+                            <a class="btn btn-success" href="{{ url_for('admin.edit_station', id=station.id) }}"
                                 title="Editar"><i class="fas fa-edit"></i></a>
-                            <a class="btn btn-danger" title="Remover"><i class="fa-solid fa-trash"></i></a>
+                            <a class="btn btn-danger" href="{{ url_for('admin.edit_station', id=station.id) }}" title="Remover"><i class="fa-solid fa-trash"></i></a>
                         </td>
                     </tr>
                     {% endfor %}
@@ -43,7 +43,7 @@
         </div>
     </div>
     <div class="modal fade" id="new_station" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title">Cadastrar nova Estaçãod do usuario</h5>

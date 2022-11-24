@@ -28,10 +28,10 @@
                         <td>{{ user.user_name }}</td>
                         <td>{{ user.email }}</td>
                         <td>{{ 'Sim' if user.is_admin else 'Não' }}</td>
-                        <td><a class="btn btn-info" href="{{ url_for('admin.station', id=user.id) }}" title="Estações"><i class="fa-brands fa-watchman-monitoring"></i></a></td>
+                        <td><a class="btn btn-info" href="{{ url_for('admin.stations_by_user', id=user.id) }}" title="Estações"><i class="fa-brands fa-watchman-monitoring"></i></a></td>
                         <td>
-                            <a class="btn btn-success" href="{{ url_for('admin.edit_user', id=user.id) }}" title="Editar" ><i class="fas fa-edit"></i></a>
-                            <a class="btn btn-danger" title="Remover"><i class="fa-solid fa-trash"></i></a>
+                            <a class="btn btn-success" href="{{ url_for('admin.user_edit', id=user.id) }}" title="Editar" ><i class="fas fa-edit"></i></a>
+                            <a class="btn btn-danger" href="{{ url_for('admin.user_delete', id=user.id) }}" title="Remover"><i class="fa-solid fa-trash"></i></a>
                         </td>
                     </tr>
                     {% endfor %}
@@ -50,7 +50,7 @@
                     </button>
                 </div>
                 <div class="modal-body">
-                    <form action="{{ url_for('auth.register')}}" method="Post" autocomplete="on">
+                    <form action="{{ url_for('admin.user_insert')}}" method="POST">
                         <div class="form-group">
                             <label class="control-label">Nome</label>
                             <input class="form-control" name="user_name" type="text" 
@@ -72,7 +72,7 @@
                         <div class="form-group">
                             <div class="form-check">
                                 <label class="form-check-label">
-                                    <input class="form-check-input" type="checkbox" >Admin
+                                    <input class="form-check-input" type="checkbox" name="is_admin" >Admin
                                 </label>
                             </div>
                         </div>                        

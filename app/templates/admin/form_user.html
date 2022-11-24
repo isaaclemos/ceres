@@ -5,7 +5,7 @@
   <div class="tile">
     <h3 class="tile-title">Cadastro de Usuario</h3>
     <div class="tile-body">
-      <form action="{{ url_for('auth.register')}}" method="Post" autocomplete="on">
+      <form action="{{ url_for('admin.user_edit', id=user.id)}}" method="POST">
         <div class="form-group">
           <label class="control-label">Nome</label>
           <input class="form-control" name="user_name" type="text" value="{{user.user_name}}"
