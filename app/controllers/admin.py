@@ -19,8 +19,8 @@ def user():
     return render_template('admin/user.html', title='Usuarios', users=users)
 
 
-@admin_bp.route('/user/insert', methods=['POST'])
-def user_insert():
+@admin_bp.route('/user/store', methods=['POST'])
+def user_store():
     create_user()
     return redirect(url_for('admin.user'))
 
@@ -39,14 +39,17 @@ def user_edit(id):
 def user_delete(id):
     user = User.query.get(id)
 
-    if user:
-        db.session.delete(user)
-        db.session.commit()
-
-        if User.query.get(id):
-            flash('Erro ao remover usuario.', category='error')
+    if user:        
+        if user.id == current_user.id:
+            flash('Não é possivel remover o usuario atual.', category='error')
         else:
-            flash('Usuario removido com sucesso.', category='success')
+            db.session.delete(user)
+            db.session.commit()
+            
+            if User.query.get(id):
+                flash('Erro ao remover usuario.', category='error')
+            else:
+                flash('Usuario removido com sucesso.', category='success')
     else:
         flash('Usuario não encontrado.', category='error')
 
@@ -55,23 +58,55 @@ def user_delete(id):
 
 @admin_bp.route('/user/<int:id>/station', methods=['GET'])
 def stations_by_user(id):
-    stations = User.query.get(id).stations
-    return render_template('admin/station.html', title='Estações', stations=stations)
+    user = User.query.get(id)
+    return render_template('admin/station.html', title='Estações', stations=user.stations, user=user)
 
 
-@admin_bp.route('/station/user/<int:id>/insert', methods=['POST'])
-def station_insert(id):
-    return render_template('admin/form_station.html', title='Estação')
-
-
-@admin_bp.route('/station/edit/<int:id>', methods=['GET', 'POST'])
-def edit_station(id):
+@admin_bp.route('/user/<int:id>/station/store', methods=['POST'])
+def station_store(id):
     
-    station = Station.query.get(id)
+    station = Station()
+    station.user_id = id
+    station.mac_address = request.form.get('mac_address')
+    station.altitude = request.form.get('altitude')
+    station.altura = request.form.get('altura')
+    station.altura_dossel = request.form.get('altura_dossel')
+    station.latitude = request.form.get('latitude')
+    station.longitude = request.form.get('longitude')    
+    station.cod_inmet = request.form.get('cod_inmet')
+
+    db.session.add(station)
+    db.session.commit()
+
+    return redirect(url_for('admin.stations_by_user',id=id))
+
+@admin_bp.route('/user/<int:id>/station/<int:id_station>/delete', methods=['GET'])
+def station_delete(id,id_station):
+    
+    station = Station.query.get(id_station)
+    db.session.delete(station)
+    db.session.commit()
+
+    return redirect(url_for('admin.stations_by_user',id=id))
+
+
+
+@admin_bp.route('user/<int:id>/station/<int:id_station>/edit', methods=['GET', 'POST'])
+def edit_station(id, id_station):
+    
+    station = Station.query.get(id_station)
     
     if request.method == 'POST':
-        print(request.form.get('altitude'))
-    
+        station.user_id = id
+        station.mac_address = request.form.get('mac_address')
+        station.altitude = request.form.get('altitude')
+        station.altura = request.form.get('altura')
+        station.altura_dossel = request.form.get('altura_dossel')
+        station.latitude = request.form.get('latitude')
+        station.longitude = request.form.get('longitude')    
+        station.cod_inmet = request.form.get('cod_inmet')
+        db.session.commit()
+        return redirect(url_for('admin.stations_by_user',id=id))
 
     return render_template('admin/form_station.html', title='Estação', station=station)
 

@@ -1,5 +1,5 @@
 {% extends 'base/default.html' %}
-{% set active_page ='user' %}
+{% set active_page ='station' %}
 {% block body %}
 <div class="col-md-12">
     <div class="tile">
@@ -27,8 +27,8 @@
                         <td>5656565656</td>
                         <td>604</td>
                         <td>
-                            <a class="btn btn-success" href={{ url_for('admin.form_station', id=i)  }}>Atualizar</a>
-                            <button class="btn btn-danger">Remover </button>
+                            <a class="btn btn-info" href="#">Dados</a>
+                            
                         </td>
                     </tr>                
                     {% endfor %}    

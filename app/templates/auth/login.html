@@ -27,19 +27,7 @@
 
             <form class="login-form" action="{{ url_for('auth.login') }}" method="POST">
                 <h3 class="login-head"><i class="fa fa-lg fa-fw fa-user"></i>Login</h3>
-                {% with messages = get_flashed_messages(with_categories=true) %}
-                {% if messages %}
-                {% for category, message in messages %}
-                <div class="alert alert-{{ 'danger' if category == 'error' else 'success' }} alter-dismissable fade show"
-                    role="alert">
-                    {{ message }}
-                    <button type="button" class="close" data-dismiss="alert">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                {% endfor %}
-                {% endif %}
-                {% endwith %}
+
                 <div class="form-group">
                     <label class="control-label">Email</label>
                     <input class="form-control" name="email" type="text" placeholder="Email" autofocus>
@@ -62,6 +50,23 @@
     <script src={{ url_for('static', filename="js/main.js" ) }}></script>
     <!-- The javascript plugin to display page loading on top-->
     <script src={{ url_for('static', filename="js/plugins/pace.min.js" ) }}></script>
+    <script src="{{ url_for('static', filename='js/plugins/bootstrap-notify.min.js' ) }}"></script>
+    <script src="https://kit.fontawesome.com/f93a302032.js" crossorigin="anonymous"></script>
+
 </body>
+<script>
+    {% with messages = get_flashed_messages(with_categories = true) %}
+    {% if messages %}
+    {% for category, message in messages %}
+    $.notify({
+        message: "{{message}}",
+        icon: 'fa fa-check'
+    }, {
+        type: "{{ 'danger' if category == 'error' else 'success' }}"
+    });
+    {% endfor %}
+    {% endif %}
+    {% endwith %}
+</script>
 
 </html>

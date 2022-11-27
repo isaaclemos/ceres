@@ -12,7 +12,7 @@
             </p>
         </div>
         <div class="table table-responsive table-hover">
-            <table class="table" id="example">
+            <table class="table" id="myTable">
                 <thead>
                     <tr>
                         <th>Nome</th>
@@ -28,10 +28,13 @@
                         <td>{{ user.user_name }}</td>
                         <td>{{ user.email }}</td>
                         <td>{{ 'Sim' if user.is_admin else 'Não' }}</td>
-                        <td><a class="btn btn-info" href="{{ url_for('admin.stations_by_user', id=user.id) }}" title="Estações"><i class="fa-brands fa-watchman-monitoring"></i></a></td>
+                        <td><a class="btn btn-info" href="{{ url_for('admin.stations_by_user', id=user.id) }}"
+                                title="Estações"><i class="fa-brands fa-watchman-monitoring"></i></a></td>
                         <td>
-                            <a class="btn btn-success" href="{{ url_for('admin.user_edit', id=user.id) }}" title="Editar" ><i class="fas fa-edit"></i></a>
-                            <a class="btn btn-danger" href="{{ url_for('admin.user_delete', id=user.id) }}" title="Remover"><i class="fa-solid fa-trash"></i></a>
+                            <a type="button" class="btn btn-primary" href="{{ url_for('admin.user_edit', id=user.id) }}"><i class="fas fa-edit"></i></a>
+                            <button class="btn btn-danger" data-toggle="modal" id="deletebtn"
+                                onclick="deleteUser('{{ url_for('admin.user_delete', id=user.id) }}')"
+                                data-target="#deletemodal" title="Remover"><i class="fa-solid fa-trash"></i></button>
                         </td>
                     </tr>
                     {% endfor %}
@@ -44,22 +47,21 @@
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" >Cadastrar novo usuario</h5>
+                    <h5 class="modal-title">Cadastrar novo usuario</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
                 <div class="modal-body">
-                    <form action="{{ url_for('admin.user_insert')}}" method="POST">
+                    <form action="{{ url_for('admin.user_store')}}" method="POST">
                         <div class="form-group">
                             <label class="control-label">Nome</label>
-                            <input class="form-control" name="user_name" type="text" 
+                            <input class="form-control" name="user_name" type="text"
                                 placeholder="Digite o nome do usuário">
                         </div>
                         <div class="form-group">
                             <label class="control-label">Email</label>
-                            <input class="form-control" name="email" type="text"
-                                placeholder="Digite o email de acesso">
+                            <input class="form-control" name="email" type="text" placeholder="Digite o email de acesso">
                         </div>
                         <div class="form-group">
                             <label class="control-label">Senha</label>
@@ -72,18 +74,45 @@
                         <div class="form-group">
                             <div class="form-check">
                                 <label class="form-check-label">
-                                    <input class="form-check-input" type="checkbox" name="is_admin" >Admin
+                                    <input class="form-check-input" type="checkbox" name="is_admin">Admin
                                 </label>
                             </div>
-                        </div>                        
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
-                        <button type="submit" class="btn btn-primary">Salvar</button>
-                    </div>
+                        </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Salvar</button>
+                </div>
                 </form>
             </div>
         </div>
     </div>
+    <!-- Modal -->
+    <div class="modal" id="deletemodal" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Desejar realmente remover o usuario?</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                    <a id="btnDeleteConfirm" class="btn btn-primary">Remover</a>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
+{% endblock %}
+{% block script %}
+<script>
+    function deleteUser(href) {
+        document.querySelector('#btnDeleteConfirm').href = href
+
+        // var table = document.getElementById("myTable")
+
+    }
+</script>
 {% endblock %}

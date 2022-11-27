@@ -18,7 +18,7 @@ def login():
         if user:
             if check_password_hash(user.password, password):                
                 login_user(user, remember=True)
-                return redirect(url_for('home.index'))
+                return redirect(url_for('user.index'))
             else:
                 flash('Senha incorreta, por favor tente novamente.', category='error')
         else:

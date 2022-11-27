@@ -9,7 +9,8 @@ class Station(db.Model, UserMixin):
     altitude = db.Column(db.Numeric(scale=2), nullable=False)
     altura = db.Column(db.Numeric(scale=2), nullable=False)
     altura_dossel = db.Column(db.Numeric(scale=2), nullable=False)
-    coordenadas = db.Column(db.String, nullable=False)
+    latitude = db.Column(db.String, nullable=False)
+    longitude = db.Column(db.String, nullable=False)
     cod_inmet = db.Column(db.String, nullable=False)    
     
 

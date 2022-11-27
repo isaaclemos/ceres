@@ -17,7 +17,8 @@
                         <th>Altitude</th>
                         <th>Altura</th>
                         <th>Altura Dossel</th>
-                        <th>Coordenadas</th>
+                        <th>Latitude</th>
+                        <th>Longitude</th>
                         <th>Cod INMET</th>
                         <th>Ações</th>
                     </tr>
@@ -29,12 +30,15 @@
                         <td>{{station.altitude}}m</td>
                         <td>{{station.altura}}m</td>
                         <td>{{station.altura_dossel}}m</td>
-                        <td>{{station.coordenadas}}</td>
+                        <td>{{station.latitude}}</td>
+                        <td>{{station.longitude}}</td>
                         <td>{{station.cod_inmet}}</td>
                         <td>
-                            <a class="btn btn-success" href="{{ url_for('admin.edit_station', id=station.id) }}"
+                            <a class="btn btn-success" href="{{ url_for('admin.edit_station', id=station.user_id, id_station=station.id) }}"
                                 title="Editar"><i class="fas fa-edit"></i></a>
-                            <a class="btn btn-danger" href="{{ url_for('admin.edit_station', id=station.id) }}" title="Remover"><i class="fa-solid fa-trash"></i></a>
+                            <button class="btn btn-danger" data-toggle="modal" id="deletebtn"
+                                onclick=deleteUser('{{ url_for('admin.station_delete', id_station=station.id, id=station.user_id) }}')
+                                data-target="#deletemodal" title="Remover"><i class="fa-solid fa-trash"></i></button>
                         </td>
                     </tr>
                     {% endfor %}
@@ -42,40 +46,45 @@
             </table>
         </div>
     </div>
+    <!-- Modal store -->
     <div class="modal fade" id="new_station" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">Cadastrar nova Estaçãod do usuario</h5>
+                    <h5 class="modal-title">Cadastrar nova estação do usuário</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
                 <div class="modal-body">
-                    <form class="row">
+                    <form class="row" action="{{ url_for('admin.station_store', id=user.id) }}" method="post">
                         <div class="form-group col-md-6">
                             <label class="control-label">MAC Adress</label>
-                            <input class="form-control" type="text" />
-                        </div>
-                        <div class="form-group col-md-6">
-                            <label class="control-label">Coordenadas</label>
-                            <input class="form-control" type="text" />
+                            <input class="form-control" type="text"  name="mac_address"/>
                         </div>
                         <div class="form-group col-md-3">
+                            <label class="control-label">Latitude</label>
+                            <input class="form-control" type="number" name="latitude">
+                          </div>
+                          <div class="form-group col-md-3">
+                            <label class="control-label">Longitude</label>
+                            <input class="form-control" type="number" name="longitude">
+                          </div>
+                        <div class="form-group col-md-3">
                             <label class="control-label">Altitude</label>
-                            <input class="form-control" type="number" />
+                            <input class="form-control" type="number" name="altitude" />
                         </div>
                         <div class="form-group col-md-3">
                             <label class="control-label">Altura</label>
-                            <input class="form-control" type="number" />
+                            <input class="form-control" type="number" name="altura"/>
                         </div>
                         <div class="form-group col-md-3">
                             <label class="control-label">Altura Dossel</label>
-                            <input class="form-control" type="number" />
+                            <input class="form-control" type="number" name="altura_dossel" />
                         </div>
                         <div class="form-group col-md-3">
                             <label class="control-label">Cod INMET</label>
-                            <input class="form-control" type="text" />
+                            <input class="form-control" type="text" name="cod_inmet"/>
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-dismiss="modal">
@@ -88,6 +97,30 @@
             </div>
         </div>
     </div>
+    <!-- Modal delete -->
+    <div class="modal" id="deletemodal" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Desejar realmente remover a estação?</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                    <a id="btnDeleteConfirm" class="btn btn-primary">Remover</a>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
+{% endblock %}
 
+{% block script %}
+<script>
+    function deleteUser(href) {
+        document.querySelector('#btnDeleteConfirm').href = href
+    }
+</script>
 {% endblock %}
