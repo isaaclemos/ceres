@@ -1,6 +1,5 @@
 from flask import Blueprint, render_template, request, flash, redirect, url_for
 from flask_login import login_required, current_user
-from werkzeug.security import generate_password_hash
 from app.models import User
 from app.database import db
 
@@ -23,7 +22,6 @@ def profile():
     email = request.form.get('email')
     password1 = request.form.get('password1')
     password2 = request.form.get('password2')
-    is_admin = request.form.get('is_admin') == 'on'
     
     user = User.query.filter_by(email=email).first()
 
@@ -40,10 +38,9 @@ def profile():
         elif len(password1) < 6:
             flash('A senha deve possuir no minimo 6 caracteres.', category='error')
         else:
-            password = generate_password_hash(password1, method='sha256')
             current_user.user_name = user_name
             current_user.email = email
-            current_user.password = password
+            current_user.set_password(password1)
             flash('Dados atualizados!', category='success')
             db.session.commit()
             return redirect(url_for('user.profile'))

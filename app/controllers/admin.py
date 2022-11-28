@@ -1,6 +1,5 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash, abort
 from flask_login import current_user
-from werkzeug.security import generate_password_hash
 from app.models import User, Station
 from app.database import db
 
@@ -39,13 +38,13 @@ def user_edit(id):
 def user_delete(id):
     user = User.query.get(id)
 
-    if user:        
+    if user:
         if user.id == current_user.id:
             flash('Não é possivel remover o usuario atual.', category='error')
         else:
             db.session.delete(user)
             db.session.commit()
-            
+
             if User.query.get(id):
                 flash('Erro ao remover usuario.', category='error')
             else:
@@ -64,7 +63,7 @@ def stations_by_user(id):
 
 @admin_bp.route('/user/<int:id>/station/store', methods=['POST'])
 def station_store(id):
-    
+
     station = Station()
     station.user_id = id
     station.mac_address = request.form.get('mac_address')
@@ -72,30 +71,30 @@ def station_store(id):
     station.altura = request.form.get('altura')
     station.altura_dossel = request.form.get('altura_dossel')
     station.latitude = request.form.get('latitude')
-    station.longitude = request.form.get('longitude')    
+    station.longitude = request.form.get('longitude')
     station.cod_inmet = request.form.get('cod_inmet')
 
     db.session.add(station)
     db.session.commit()
 
-    return redirect(url_for('admin.stations_by_user',id=id))
+    return redirect(url_for('admin.stations_by_user', id=id))
+
 
 @admin_bp.route('/user/<int:id>/station/<int:id_station>/delete', methods=['GET'])
-def station_delete(id,id_station):
-    
+def station_delete(id, id_station):
+
     station = Station.query.get(id_station)
     db.session.delete(station)
     db.session.commit()
 
-    return redirect(url_for('admin.stations_by_user',id=id))
-
+    return redirect(url_for('admin.stations_by_user', id=id))
 
 
 @admin_bp.route('user/<int:id>/station/<int:id_station>/edit', methods=['GET', 'POST'])
 def edit_station(id, id_station):
-    
+
     station = Station.query.get(id_station)
-    
+
     if request.method == 'POST':
         station.user_id = id
         station.mac_address = request.form.get('mac_address')
@@ -103,10 +102,10 @@ def edit_station(id, id_station):
         station.altura = request.form.get('altura')
         station.altura_dossel = request.form.get('altura_dossel')
         station.latitude = request.form.get('latitude')
-        station.longitude = request.form.get('longitude')    
+        station.longitude = request.form.get('longitude')
         station.cod_inmet = request.form.get('cod_inmet')
         db.session.commit()
-        return redirect(url_for('admin.stations_by_user',id=id))
+        return redirect(url_for('admin.stations_by_user', id=id))
 
     return render_template('admin/form_station.html', title='Estação', station=station)
 
@@ -137,17 +136,16 @@ def create_user(user_id=None, update=False):
         elif len(password1) < 6:
             flash('A senha deve possuir no minimo 6 caracteres.', category='error')
         else:
-            password = generate_password_hash(password1, method='sha256')
 
             if not update:
                 user = User(email=email, user_name=user_name,
-                            password=password, is_admin=is_admin)
+                            password=password1, is_admin=is_admin)
                 db.session.add(user)
                 flash('Usuario cadastrado!', category='success')
             else:
                 user.user_name = user_name
                 user.email = email
-                user.password = password
+                user.set_password(password1)
                 user.is_admin = is_admin
                 flash('Dados atualizados!', category='success')
             db.session.commit()
