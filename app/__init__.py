@@ -1,7 +1,7 @@
 from flask import Flask
 from app.ext import login_manager, database
-from app.controllers import *
-from app.resources import *
+from app.controllers import auth_bp, admin_bp, user_bp
+from app.resources import service_bp
 
 controllers= [
     auth_bp,
@@ -19,7 +19,7 @@ def create_app():
 
     database.init_app(app)
     login_manager.init_app(app)
-    
+
     database.create_database(app)
 
 
