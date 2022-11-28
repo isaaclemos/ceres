@@ -1,5 +1,7 @@
-from app.ext.database import db
 from flask_login import UserMixin
+
+from app.ext.database import db
+
 
 class Station(db.Model, UserMixin):    
        

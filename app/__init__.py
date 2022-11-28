@@ -1,6 +1,7 @@
 from flask import Flask
-from app.ext import login_manager, database
-from app.controllers import auth_bp, admin_bp, user_bp
+
+from app.controllers import admin_bp, auth_bp, user_bp
+from app.ext import database, login_manager
 from app.resources import service_bp
 
 controllers = [
