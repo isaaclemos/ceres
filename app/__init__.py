@@ -3,7 +3,7 @@ from app.ext import login_manager, database
 from app.controllers import auth_bp, admin_bp, user_bp
 from app.resources import service_bp
 
-controllers= [
+controllers = [
     auth_bp,
     admin_bp,
     user_bp,
@@ -22,6 +22,4 @@ def create_app():
 
     database.create_database(app)
 
-
     return app
-
