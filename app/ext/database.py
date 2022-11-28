@@ -14,7 +14,7 @@ def create_database(app):
     if not path.exists(f'{app.root_path}/banco.db'):
         with app.app_context():
             db.create_all()
-            db.session.commit()
+            create_admin()
         print('Created Database!')
 
 
