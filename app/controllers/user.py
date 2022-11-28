@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, request, flash, redirect, url_for
 from flask_login import login_required, current_user
 from app.models import User
-from app.database import db
+from app.ext.database import db
 
 user_bp = Blueprint('user', __name__,url_prefix='/user')
 

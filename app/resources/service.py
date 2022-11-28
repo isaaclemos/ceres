@@ -1,5 +1,5 @@
 from flask import Blueprint, request, jsonify, make_response
-from app.database import db
+from app.ext.database import db
 from app.models import Station
 from datetime import datetime
 
