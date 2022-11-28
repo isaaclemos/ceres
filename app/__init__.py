@@ -3,11 +3,13 @@ from flask_login import LoginManager
 from app.database import db, create_database
 from app.models import *
 from app.controllers import *
+from app.resources import *
 
 controllers= [
     auth_bp,
     admin_bp,
-    user_bp
+    user_bp,
+    service_bp
 ]
 
 DB_NAME = 'banco.db'
