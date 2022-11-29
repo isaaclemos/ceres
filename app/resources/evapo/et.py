@@ -139,9 +139,11 @@ media_solo = stats2.mean
 fr=(stats1.sum/stats1.maximumValue)/stats1.elementCount
 
 '''
-media_veg = temp_veg().mean
-media_solo = temp_solo().mean
-fr = 0
+temp_v = temp_veg(ndvi())
+temp_s=temp_solo(ndvi())
+media_veg = temp_v.mean
+media_solo = temp_s.mean
+fr = (temp_v.sum/temp_v.max)/temp_v.count
 
 
 def loutc(emissividade_veg, ndvi):
@@ -166,7 +168,7 @@ def albedo_solo(vis_reflec, ivp_reflec, ndvi):
     return (ndvi < 0.24)*((ivp_reflec*coef_albedo_ivp)+(ivp_reflec*coef_albedo_vis))
 
 
-def rns(albedo_veg, rse, lin, loutc, emissividade_veg):
+def rnc(albedo_veg, rse, lin, loutc, emissividade_veg):
     return ((1-albedo_veg)*rse)+lin-loutc-((1-emissividade_veg)*lin)
 
 
@@ -211,15 +213,15 @@ def hc(raa, rac):
     return (1.15*1005*0.10)/(rac+raa)
 
 
-def he(hc=hc(), HS=hc(), ndvi=ndvi()):
+def he(hc, HS, ndvi):
     return fr*hc+(1-fr)*HS
 
 
-def ge(rne=rne()):
+def ge(rne):
     return (0.3236*rne)-51.52
 
 
-def lee(rne=rne(), he=he(), ge=ge()):
+def lee(rne, he, ge):
     return rne-he-ge
 
 
