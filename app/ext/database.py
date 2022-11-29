@@ -20,7 +20,12 @@ def create_database(app):
 
 def create_admin():
     from app.models import User
-    user = User(user_name='admin', email='admin@admin',
-                password="admin", is_admin=True)
-    db.session.add(user)
-    db.session.commit()
+
+    user_name = 'admin'
+    email = 'admin@admin'
+
+    if not User.query.filter_by(email=email).first():
+        user = User(user_name=user_name, email=email,
+                    password="admin", is_admin=True)
+        db.session.add(user)
+        db.session.commit()
