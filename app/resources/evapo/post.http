@@ -1,0 +1,10 @@
+POST http://127.0.0.1:5000/receive HTTP/1.1
+content-type: application/json
+
+{
+    "mac_address": "qwewwewew",
+    "img_median" : "",
+    "csv_termal" : "",
+    "timestamp" : ""
+    
+}
