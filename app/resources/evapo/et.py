@@ -1,4 +1,4 @@
-from math import *
+import math
 import rasterio
 
 # Entrada de temperatura
@@ -31,7 +31,7 @@ ivp_max = 255
 
 # Converter elevacao solar de Graus para Radianos
 esun_sol = 1367
-elev_rad = ((elev_sun/180)*pi)
+elev_rad = ((elev_sun/180)*math.pi)
 
 # Alguns paramentrosdo vis e ivp
 
@@ -45,24 +45,26 @@ esun_ivp = 1050.5
 # calculos do visivel
 
 
-lman_vis = lmax_vis*cos(elev_rad)
-lmin_vis_z = lmin_vis*cos(elev_rad)
+lman_vis = lmax_vis*math.cos(elev_rad)
+lmin_vis_z = lmin_vis*math.cos(elev_rad)
 dif_lmax_lmin_vis = lman_vis - lmin_vis_z
 ganho_vis = dif_lmax_lmin_vis/(vis_max-vis_min)
 offset_vis = lmin_vis_z
-coef_vis = (pi*dist_terra_sol*dist_terra_sol)/((esun_vis)*cos(elev_rad))
+coef_vis = (math.pi*dist_terra_sol*dist_terra_sol) / \
+    ((esun_vis)*math.cos(elev_rad))
 coef_albedo_vis = dif_lmax_lmin_vis/((lmax_vis+lmax_ivp)-(lmin_vis+lmin_ivp))
 
 # calculos da infraviselho proximo
 
 
-lman_ivp = lmax_ivp*cos(elev_rad)
-lmin_ivp_z = lmin_ivp*cos(elev_rad)
+lman_ivp = lmax_ivp*math.cos(elev_rad)
+lmin_ivp_z = lmin_ivp*math.cos(elev_rad)
 dif_lmax_lmin_ivp = lman_ivp-lmin_ivp_z
 ganho_ivp = dif_lmax_lmin_ivp/(ivp_max-ivp_min)
 offset_ivp = lmin_ivp_z
-coef_ivp = (pi*dist_terra_sol*dist_terra_sol)/((esun_ivp)*cos(elev_rad))
+coef_ivp = (math.pi*dist_terra_sol*dist_terra_sol)/(esun_ivp*math.cos(elev_rad))
 coef_albedo_ivp = dif_lmax_lmin_ivp/((lmax_vis+lmax_ivp)-(lmin_vis+lmin_ivp))
+
 
 def vis_rad(vis_band3):
     return (vis_band3*ganho_vis)+offset_vis
@@ -80,42 +82,42 @@ def ivp_reflec(ivp_rad):
     return ivp_rad*coef_ivp
 
 
-def NDVI(vis_reflect, ivp_reflect):
+def ndvi(vis_reflect, ivp_reflect):
     return (ivp_reflect-vis_reflect)/(ivp_reflect+vis_reflect)
 
 
-def TRANSMITIVIDADE_ATM(NDVI):
+def transmitividade_atm(ndvi):
     # Rever 2E pois não me lembro
-    return (0.75 + (2E-5*(NDVI/NDVI)*altitude))
+    return (0.75 + (2E-5*(ndvi/ndvi)*altitude))
 
 
-def EMISSIVIDADE_ATM(TRANSMITIVIDADE_ATM):
+def emissividade_atm(transmitividade_atm):
     # Rever Logaritimo natural em python math.log()
-    return (0.85*((-1*(log(TRANSMITIVIDADE_ATM))) ^ 0.09))
+    return (0.85*((-1*(math.log(transmitividade_atm))) ^ 0.09))
 
 
-def lin(EMISSIVIDADE_ATM):
+def lin(emissividade_atm):
     # Rever exponencial (5.6e) em python esta correto
-    return (EMISSIVIDADE_ATM*(exp(5.67)-8)*(temp ^ 4))
+    return (emissividade_atm*(5.67e-8)*(temp^4))
 
 
-def EMISSIVIDADE_VEG(NDVI):
-    return (NDVI >= 0.24)*((1.0094)+(0.10824*log10(NDVI)))
+def emissividade_veg(ndvi):
+    return (ndvi >= 0.24)*(1.0094+(0.10824*math.log10(ndvi)))
 
 
-def EMISSIVIDADE_SOLO(NDVI):
-    return (NDVI < 0.24)*0.94
+def emissividade_solo(ndvi):
+    return (ndvi < 0.24)*0.94
 
 
-def TEMP_VEG(NDVI):
+def temp_veg(ndvi):
     # Rever a utilação da temperatura, pois a mascara deve servir
     # para a utiliação dos dados termais
-    return ((NDVI >= 0.24)*1)*temp
+    return ((ndvi >= 0.24)*1)*temp
 
 
-def TEMP_SOLO(NDVI):
+def temp_solo(ndvi):
     # Idem a função anterior
-    return ((NDVI < 0.24)*1)*temp
+    return ((ndvi < 0.24)*1)*temp
 
 
 # Estatisticas dos rasters
@@ -137,98 +139,94 @@ media_solo = stats2.mean
 fr=(stats1.sum/stats1.maximumValue)/stats1.elementCount
 
 '''
-media_veg = 0
-media_solo = 0
+media_veg = temp_veg().mean
+media_solo = temp_solo().mean
 fr = 0
 
 
-def LOUTC(EMISSIVIDADE_VEG, NDVI):
-    # Rever 5.67e
-    return (((NDVI >= 0.24)*(media_veg ^ 4))*EMISSIVIDADE_VEG*exp(5.67)-8)
+def loutc(emissividade_veg, ndvi):
+    return (((ndvi >= 0.24)*(media_veg^4))*emissividade_veg*5.67e-8)
 
 
-def LOUTS(EMISSIVIDADE_SOLO, NDVI):
-    # Rever 5.67e
-    return (((NDVI < 0.24)*(media_solo ^ 4))*EMISSIVIDADE_SOLO*exp(5.67)-8)
+def louts(emissividade_solo, ndvi):
+    return (((ndvi < 0.24)*(media_solo ^ 4))*emissividade_solo*5.67e-8)
 
 
-def RSE(TRANSMITIVIDADE_ATM):
-    return (esun_sol*(dist_terra_sol)*(cos(elev_rad))*(TRANSMITIVIDADE_ATM))
+def rse(transmitividade_atm):
+    return (esun_sol*(dist_terra_sol)*(math.cos(elev_rad))*(transmitividade_atm))
 
 
-def ALBEDO_VEG(VIS_REFLEC, IVP_REFLEC, NDVI):
+def albedo_veg(vis_reflec, ivp_reflec, ndvi):
     # Rever formula pois possivelmente esta errada
-    return (NDVI >= 0.24)*((IVP_REFLEC*coef_albedo_ivp)+(IVP_REFLEC*coef_albedo_vis))
+    return (ndvi >= 0.24)*((ivp_reflec*coef_albedo_ivp)+(ivp_reflec*coef_albedo_vis))
 
 
-def ALBEDO_SOLO(VIS_REFLEC, IVP_REFLEC, NDVI):
+def albedo_solo(vis_reflec, ivp_reflec, ndvi):
     # Rever formula pois possivelmente esta errada
-    return (NDVI < 0.24)*((IVP_REFLEC*coef_albedo_ivp)+(IVP_REFLEC*coef_albedo_vis))
+    return (ndvi < 0.24)*((ivp_reflec*coef_albedo_ivp)+(ivp_reflec*coef_albedo_vis))
 
 
-def RNS(ALBEDO_VEG, RSE, LIN, LOUTC, EMISSIVIDADE_VEG):
-    return ((1-ALBEDO_VEG)*RSE)+LIN-LOUTC-((1-EMISSIVIDADE_VEG)*LIN)
+def rns(albedo_veg, rse, lin, loutc, emissividade_veg):
+    return ((1-albedo_veg)*rse)+lin-loutc-((1-emissividade_veg)*lin)
 
 
-def RNS(ALBEDO_SOLO, RSE, LIN, LOUTS, EMISSIVIDADE_SOLO):
-    return ((1-ALBEDO_SOLO)*RSE)+LIN-LOUTS-((1-EMISSIVIDADE_SOLO)*LIN)
+def rns(albedo_solo, rse, lin, louts, emissividade_solo):
+    return ((1-albedo_solo)*rse)+lin-louts-((1-emissividade_solo)*lin)
 
 
-def RNE(RNC, RNS):
-    return fr*RNC+(1-fr)*RNS
+def rne(rnc, rns):
+    return fr*rnc+(1-fr)*rns
 
 
-def SAVI(IVP_REFLEC, VIS_REFLEC):
-    return (1.5*(IVP_REFLEC-VIS_REFLEC))/(0.5+(IVP_REFLEC+VIS_REFLEC))
+def savi(ivp_reflec, vis_reflec):
+    return (1.5*(ivp_reflec-vis_reflec))/(0.5+(ivp_reflec+vis_reflec))
 
 
-def IAF(SAVI):
-    # Confirmar logaritimo natural ln em gdal
-    return (-1*((log((0.69-SAVI)/0.59))/0.91))
+def iaf(savi):
+    return (-1*((math.log((0.69-savi)/0.59))/0.91))
 
 
-def RAC(IAF):
-    return (IAF >= 0.5)*(25/IAF)
-
-# confirmar log10 como log() gdal
+def rac(iaf):
+    return (iaf >= 0.5)*(25/iaf)
 
 
-RAS0 = (log10(alt_referencia/(0.05*alt_dossel*0.1)))*(log10((0.63 * alt_dossel+(0.05*alt_dossel*0.1))/(0.05*alt_dossel*0.1)))/((vento*0.41)**2)
-RAS1 = (((log10((alt_referencia-(0.63*alt_dossel))/(0.05*alt_dossel*0.1)))/(vento*0.41)**2)*(alt_dossel/(2.5*(alt_dossel-(0.63*alt_dossel)))))*(exp(2.5)-exp(2.5*(1-((0.63*alt_dossel)+((0.05*alt_dossel*0.1)/alt_dossel)))))
-RAA0 = (((log10(alt_referencia/(0.05*alt_dossel*0.1)))**2)/((vento*0.41)**2))-RAS0 
-RAA1 = ((log10((alt_referencia-(0.63*alt_dossel))/(0.05*alt_dossel)))/((vento*0.41)**2))*((log((alt_referencia-(0.63*alt_dossel))/(alt_dossel-(0.63*alt_dossel))))+(alt_dossel/(2.5*(alt_dossel-(0.63*alt_dossel)))))*(exp(2.5*(1-(((alt_dossel*0.63)+(0.05*alt_dossel))/alt_dossel)))-1)
+ras0 = (math.log10(alt_referencia/(0.05*alt_dossel*0.1)))*(math.log10((0.63 *
+                                                             alt_dossel+(0.05*alt_dossel*0.1))/(0.05*alt_dossel*0.1)))/((vento*0.41)**2)
+ras1 = (((math.log10((alt_referencia-(0.63*alt_dossel))/(0.05*alt_dossel*0.1)))/(vento*0.41)**2)*(alt_dossel/(2.5 *
+        (alt_dossel-(0.63*alt_dossel)))))*(math.exp(2.5)-math.exp(2.5*(1-((0.63*alt_dossel)+((0.05*alt_dossel*0.1)/alt_dossel)))))
+raa0 = (((math.log10(alt_referencia/(0.05*alt_dossel*0.1)))**2)/((vento*0.41)**2))-ras0
+raa1 = ((math.log10((alt_referencia-(0.63*alt_dossel))/(0.05*alt_dossel)))/((vento*0.41)**2))*((math.log((alt_referencia-(0.63*alt_dossel))/(alt_dossel -
+                                                                                                                                   (0.63*alt_dossel))))+(alt_dossel/(2.5*(alt_dossel-(0.63*alt_dossel)))))*(exp(2.5*(1-(((alt_dossel*0.63)+(0.05*alt_dossel))/alt_dossel)))-1)
 
 
-def RAS(IAF):
-    return ((IAF/10)*RAS1)+(((4-IAF)/10)*RAS0)
+def ras(iaf):
+    return ((iaf/10)*ras1)+(((4-iaf)/10)*ras0)
 
 
-def RAA(IAF):
-    return ((IAF/20)*RAA1)+(((4-IAF)/20)*RAA0)
+def raa(iaf):
+    return ((iaf/20)*raa1)+(((4-iaf)/20)*raa0)
 
 
-def HC(RAA, RAC):
-    return (1.15*1005*0.10)/(RAC+RAA)
+def hc(raa, rac):
+    return (1.15*1005*0.10)/(rac+raa)
 
 
-def HC(RAA(), RAS()):
-    return (1.15*1005*0.13)/(RAS+RAA)
+def he(hc=hc(), HS=hc(), ndvi=ndvi()):
+    return fr*hc+(1-fr)*HS
 
 
-def HE(HC=HC(), HS=HC(), NDVI=NDVI()):
-    return fr*HC+(1-fr)*HS
+def ge(rne=rne()):
+    return (0.3236*rne)-51.52
 
 
-def GE(RNE=RNE()):
-    return (0.3236*RNE)-51.52
+def lee(rne=rne(), he=he(), ge=ge()):
+    return rne-he-ge
 
-def LEE(RNE=RNE(),HE=HE(),GE=GE()):
-    return RNE-HE-GE
 
-def LAMBDA(EMISSIVIDADE_VEG,EMISSIVIDADE_SOLO):
+def lambda_et(emissividade_veg, emissividade_solo):
     # Confirmar dados de temperatura e 1e6
-    return ((2.501-0.00236*((temp*(EMISSIVIDADE_VEG+EMISSIVIDADE_SOLO))-273.16))*(1e6))
-    
+    return ((2.501-0.00236*((temp*(emissividade_veg+emissividade_solo))-273.16))*(1e6))
 
-def ET (LEE=LEE(),LAMBDA=LAMBDA()):
-    return (3600*LEE)/LAMBDA
+
+def et(lee, lambda_et):
+    return (3600*lee)/lambda_et
