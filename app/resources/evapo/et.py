@@ -1,234 +1,149 @@
-import math
+import numpy as np
 import rasterio
 
-# Entrada de temperatura
+from ...models import Station
 
-temp = 0
+np.seterr(divide='ignore')
 
-# Entrada de vento
+def two_source_model(image: str, vento:float, sun_values:dict, temp_kelvin:float, station:Station):        
 
-vento = 1
+    
+    # Entrada da imagem vinda da estaçao
+    vis_band3 = rasterio.open(image).read(3).astype('float64')
+    ivp_band1 = rasterio.open(image).read(1).astype('float64')
+    # Entrada da imagem vinda da estaçao
 
-# entradas comum
+    # ------------------------------------------------------------------------------
+    # Valores minimos e maximo das bandas vis e ivp
 
-elev_sun = 1
-altitude = 637
-dist_terra_sol = 1
-alt_dossel = 2
-alt_referencia = 2
+    vis_min = np.nanmin(vis_band3)
+    vis_max = np.nanmax(vis_band3)
+    ivp_min = np.nanmin(ivp_band1)
+    ivp_max = np.nanmax(ivp_band1)
 
-# Entrada do visivel
+    # ------------------------------------------------------------------------------
+    # Dados thermais do sensor
 
-vis_min = 0
-vis_max = 255
+    temp = temp_kelvin
+    # ------------------------------------------------------------------------------
+    # Dados do INMET
 
-# Entrada do Infra
+    vento = vento
+    # ------------------------------------------------------------------------------
+    # Dados oriundos da estação de coleta de dados
 
-ivp_min = 0
-ivp_max = 255
+    altitude =  float(station.altitude)
+    alt_dossel = float(station.altura_dossel)
+    alt_referencia = float(station.altura)
+    # ------------------------------------------------------------------------------
+    # Dados essencias do Sol
+    elev_sun = sun_values['sun_elev']
+    dist_terra_sol = sun_values['dist_earth_sun']
+    esun_sol = 1367
+    elev_rad = ((elev_sun/180)*np.pi)
 
-# Criacao de variaveis e suas equacoes
+    # ------------------------------------------------------------------------------
+    # Parametros constantes do sensor do vis e ivp
 
-# Converter elevacao solar de Graus para Radianos
-esun_sol = 1367
-elev_rad = ((elev_sun/180)*math.pi)
+    LMIN_VIS = -1.17
+    LMAX_VIS = 264
+    ESUN_VIS = 1556.5
+    LMIN_IVP = -1.51
+    LMAX_IVP = 221
+    ESUN_IVP = 1050.5
+    # ------------------------------------------------------------------------------
+    # Obtenção dos parametros do visivel
 
-# Alguns paramentrosdo vis e ivp
+    lman_vis = LMAX_VIS*np.cos(elev_rad)
+    lmin_vis_z = LMIN_VIS*np.cos(elev_rad)
+    dif_lmax_lmin_vis = lman_vis - lmin_vis_z
+    ganho_vis = dif_lmax_lmin_vis/(vis_max-vis_min)
+    offset_vis = lmin_vis_z
+    coef_vis = (np.pi*dist_terra_sol*dist_terra_sol) / \
+        ((ESUN_VIS)*np.cos(elev_rad))
+    coef_albedo_vis = dif_lmax_lmin_vis / \
+        ((LMAX_VIS+LMAX_IVP)-(LMIN_VIS+LMIN_IVP))
+    # ------------------------------------------------------------------------------
+    # Obtenção dos parametros do infravermelho proximo
 
-lmin_vis = -1.17
-lmax_vis = 264
-esun_vis = 1556.5
-lmin_ivp = -1.51
-lmax_ivp = 221
-esun_ivp = 1050.5
+    lman_ivp = LMAX_IVP*np.cos(elev_rad)
+    lmin_ivp_z = LMIN_IVP*np.cos(elev_rad)
+    dif_lmax_lmin_ivp = lman_ivp-lmin_ivp_z
+    ganho_ivp = dif_lmax_lmin_ivp/(ivp_max-ivp_min)
+    offset_ivp = lmin_ivp_z
+    coef_ivp = (np.pi*dist_terra_sol*dist_terra_sol)/(ESUN_IVP*np.cos(elev_rad))
+    coef_albedo_ivp = dif_lmax_lmin_ivp/((LMAX_VIS+LMAX_IVP)-(LMIN_VIS+LMIN_IVP))
 
-# calculos do visivel
+    # Processamento necessario para conversão de contadores digitais para valores de
+    # reflectância da imagem oriunda da estação
 
+    vis_rad = (vis_band3*ganho_vis)+offset_vis
+    ivp_rad = (ivp_band1*ganho_ivp)+offset_ivp
+    vis_reflect = vis_rad*coef_vis
+    ivp_reflect = ivp_rad*coef_ivp
+    # --------------------------------------------------------------------------------
+    # Indices de vegetação
 
-lman_vis = lmax_vis*math.cos(elev_rad)
-lmin_vis_z = lmin_vis*math.cos(elev_rad)
-dif_lmax_lmin_vis = lman_vis - lmin_vis_z
-ganho_vis = dif_lmax_lmin_vis/(vis_max-vis_min)
-offset_vis = lmin_vis_z
-coef_vis = (math.pi*dist_terra_sol*dist_terra_sol) / \
-    ((esun_vis)*math.cos(elev_rad))
-coef_albedo_vis = dif_lmax_lmin_vis/((lmax_vis+lmax_ivp)-(lmin_vis+lmin_ivp))
+    ndvi = (ivp_reflect-vis_reflect)/(ivp_reflect+vis_reflect)
+    savi = (1.5*(ivp_reflect-vis_reflect))/(0.5+(ivp_reflect+vis_reflect))
+    iaf = (-1*((np.log((0.69-savi)/0.59))/0.91))
 
-# calculos da infraviselho proximo
+    # Execução do modelo matemático Two source
 
+    transmitividade_atm = (0.75 + (2e-5*altitude))
+    emissividade_atm = (0.85*((-1*(np.log(transmitividade_atm)))**0.09))
+    lin = (emissividade_atm*(5.67e-8)*(temp**4))
 
-lman_ivp = lmax_ivp*math.cos(elev_rad)
-lmin_ivp_z = lmin_ivp*math.cos(elev_rad)
-dif_lmax_lmin_ivp = lman_ivp-lmin_ivp_z
-ganho_ivp = dif_lmax_lmin_ivp/(ivp_max-ivp_min)
-offset_ivp = lmin_ivp_z
-coef_ivp = (math.pi*dist_terra_sol*dist_terra_sol)/(esun_ivp*math.cos(elev_rad))
-coef_albedo_ivp = dif_lmax_lmin_ivp/((lmax_vis+lmax_ivp)-(lmin_vis+lmin_ivp))
+    emissividade_veg = (ndvi >= 0.24)*(1.0094+(0.10824*np.log10(ndvi)))
+    emissividade_solo = (ndvi < 0.24)*0.94
 
+    temp_veg = ((ndvi >= 0.24)*1)*temp
+    temp_solo = ((ndvi < 0.24)*1)*temp
 
-def vis_rad(vis_band3):
-    return (vis_band3*ganho_vis)+offset_vis
+    # Estatisticas dos rasters
+    media_veg = np.nanmean(temp_veg)
+    media_solo = np.nanmean(temp_solo)
+    fr = (np.nansum(temp_veg)/np.nanmax(temp_veg))/np.size(temp_veg)
 
-
-def ivp_rad(ivp_band1):
-    return (ivp_band1*ganho_ivp)+offset_ivp
-
-
-def vis_reflect(vis_rad):
-    return vis_rad*coef_vis
-
-
-def ivp_reflec(ivp_rad):
-    return ivp_rad*coef_ivp
-
-
-def ndvi(vis_reflect, ivp_reflect):
-    return (ivp_reflect-vis_reflect)/(ivp_reflect+vis_reflect)
-
-
-def transmitividade_atm(ndvi):
-    # Rever 2E pois não me lembro
-    return (0.75 + (2E-5*(ndvi/ndvi)*altitude))
-
-
-def emissividade_atm(transmitividade_atm):
-    # Rever Logaritimo natural em python math.log()
-    return (0.85*((-1*(math.log(transmitividade_atm))) ^ 0.09))
-
-
-def lin(emissividade_atm):
-    # Rever exponencial (5.6e) em python esta correto
-    return (emissividade_atm*(5.67e-8)*(temp^4))
-
-
-def emissividade_veg(ndvi):
-    return (ndvi >= 0.24)*(1.0094+(0.10824*math.log10(ndvi)))
-
-
-def emissividade_solo(ndvi):
-    return (ndvi < 0.24)*0.94
-
-
-def temp_veg(ndvi):
-    # Rever a utilação da temperatura, pois a mascara deve servir
-    # para a utiliação dos dados termais
-    return ((ndvi >= 0.24)*1)*temp
-
-
-def temp_solo(ndvi):
-    # Idem a função anterior
-    return ((ndvi < 0.24)*1)*temp
-
-
-# Estatisticas dos rasters
-
-# Refazer tudo do zero
-'''
-
-provider1 = layer25.dataProvider()
-ext1 = layer25.extent()
-stats1 = provider1.bandStatistics(1,QgsRasterBandStats.All,ext1,0)
-
-provider2 = layer26.dataProvider()
-ext2 = layer26.extent()
-stats2 = provider2.bandStatistics(1,QgsRasterBandStats.All,ext1,0)
-
-media_veg = stats1.mean
-media_solo = stats2.mean 
-
-fr=(stats1.sum/stats1.maximumValue)/stats1.elementCount
-
-'''
-temp_v = temp_veg(ndvi())
-temp_s=temp_solo(ndvi())
-media_veg = temp_v.mean
-media_solo = temp_s.mean
-fr = (temp_v.sum/temp_v.max)/temp_v.count
-
-
-def loutc(emissividade_veg, ndvi):
-    return (((ndvi >= 0.24)*(media_veg^4))*emissividade_veg*5.67e-8)
-
-
-def louts(emissividade_solo, ndvi):
-    return (((ndvi < 0.24)*(media_solo ^ 4))*emissividade_solo*5.67e-8)
-
-
-def rse(transmitividade_atm):
-    return (esun_sol*(dist_terra_sol)*(math.cos(elev_rad))*(transmitividade_atm))
-
-
-def albedo_veg(vis_reflec, ivp_reflec, ndvi):
+    loutc = (((ndvi >= 0.24)*media_veg**4)*emissividade_veg*5.67e-8)
+    louts = (((ndvi < 0.24)*(media_solo**4))*emissividade_solo*5.67e-8)
+    rse = (esun_sol*(dist_terra_sol)*(np.cos(elev_rad))*(transmitividade_atm))
     # Rever formula pois possivelmente esta errada
-    return (ndvi >= 0.24)*((ivp_reflec*coef_albedo_ivp)+(ivp_reflec*coef_albedo_vis))
-
-
-def albedo_solo(vis_reflec, ivp_reflec, ndvi):
+    albedo_veg = (ndvi >= 0.24)*((ivp_reflect*coef_albedo_ivp)+(ivp_reflect*coef_albedo_vis))
     # Rever formula pois possivelmente esta errada
-    return (ndvi < 0.24)*((ivp_reflec*coef_albedo_ivp)+(ivp_reflec*coef_albedo_vis))
+    albedo_solo = (ndvi < 0.24)*((ivp_reflect*coef_albedo_ivp)+(ivp_reflect*coef_albedo_vis))
+    # rnc = radiação líquida estimada sobre o dossel
+    rnc = ((1-albedo_veg)*rse)+lin-loutc-((1-emissividade_veg)*lin)
+    # rnc = radiação líquida estimada sobre o solo
+    rns = ((1-albedo_solo)*rse)+lin-louts-((1-emissividade_solo)*lin)
+    # rne = radiação líquida estimada sobre a viticultura
+    rne = fr*rnc+(1-fr)*rns
+    rac = (iaf >= 0.5)*(25/iaf)
+    ras0 = (np.log(alt_referencia/(0.05*alt_dossel*0.1)))*(np.log((0.63 *  alt_dossel+(0.05*alt_dossel*0.1))/(0.05*alt_dossel*0.1)))/((vento*0.41)**2)
+    ras1 = (((np.log((alt_referencia-(0.63*alt_dossel))/(0.05*alt_dossel*0.1)))/(vento*0.41)**2)*(alt_dossel/(2.5*(alt_dossel-(0.63*alt_dossel)))))*(np.exp(2.5)-np.exp(2.5*(1-((0.63*alt_dossel)+((0.05*alt_dossel*0.1)/alt_dossel)))))
+    raa0 = (((np.log(alt_referencia/(0.05*alt_dossel*0.1)))**2)/((vento*0.41)**2))-ras0
+    raa1 = ((np.log((alt_referencia-(0.63*alt_dossel))/(0.05*alt_dossel)))/((vento*0.41)**2))*((np.log((alt_referencia-(0.63*alt_dossel))/(alt_dossel-(0.63*alt_dossel))))+(alt_dossel/(2.5*(alt_dossel-(0.63*alt_dossel)))))*(np.exp(2.5*(1-(((alt_dossel*0.63)+(0.05*alt_dossel))/alt_dossel)))-1)
+    ras = ((iaf/10)*ras1)+(((4-iaf)/10)*ras0)
+    raa = ((iaf/20)*raa1)+(((4-iaf)/20)*raa0)
 
+    # hc = fluxo de calor sensível no dossel
+    hc = (1.15*1005*0.10)/(rac+raa)
 
-def rnc(albedo_veg, rse, lin, loutc, emissividade_veg):
-    return ((1-albedo_veg)*rse)+lin-loutc-((1-emissividade_veg)*lin)
+    # hs = fluxo de calor sensível superfície do solo
+    hs = (1.15*1005*0.13)/(ras+raa)
 
+    # he = fluxo de calor sensível acima do dossel
+    he = fr*hc+(1-fr)*hs
 
-def rns(albedo_solo, rse, lin, louts, emissividade_solo):
-    return ((1-albedo_solo)*rse)+lin-louts-((1-emissividade_solo)*lin)
+    # ge = fluxo de calor estimado
+    ge = (0.3236*rne)-51.52
 
+    # lee = fluxo  de  calor  latente  sobre  o  dossel
+    lee = rne-he-ge
 
-def rne(rnc, rns):
-    return fr*rnc+(1-fr)*rns
+    lambda_et = (
+        (2.501-0.00236*((temp*(emissividade_veg+emissividade_solo))-273.16))*(1e6))
+    # et = evapotranspiração horaria
+    et = (3600*lee)/lambda_et
 
-
-def savi(ivp_reflec, vis_reflec):
-    return (1.5*(ivp_reflec-vis_reflec))/(0.5+(ivp_reflec+vis_reflec))
-
-
-def iaf(savi):
-    return (-1*((math.log((0.69-savi)/0.59))/0.91))
-
-
-def rac(iaf):
-    return (iaf >= 0.5)*(25/iaf)
-
-
-ras0 = (math.log10(alt_referencia/(0.05*alt_dossel*0.1)))*(math.log10((0.63 *
-                                                             alt_dossel+(0.05*alt_dossel*0.1))/(0.05*alt_dossel*0.1)))/((vento*0.41)**2)
-ras1 = (((math.log10((alt_referencia-(0.63*alt_dossel))/(0.05*alt_dossel*0.1)))/(vento*0.41)**2)*(alt_dossel/(2.5 *
-        (alt_dossel-(0.63*alt_dossel)))))*(math.exp(2.5)-math.exp(2.5*(1-((0.63*alt_dossel)+((0.05*alt_dossel*0.1)/alt_dossel)))))
-raa0 = (((math.log10(alt_referencia/(0.05*alt_dossel*0.1)))**2)/((vento*0.41)**2))-ras0
-raa1 = ((math.log10((alt_referencia-(0.63*alt_dossel))/(0.05*alt_dossel)))/((vento*0.41)**2))*((math.log((alt_referencia-(0.63*alt_dossel))/(alt_dossel -
-                                                                                                                                   (0.63*alt_dossel))))+(alt_dossel/(2.5*(alt_dossel-(0.63*alt_dossel)))))*(exp(2.5*(1-(((alt_dossel*0.63)+(0.05*alt_dossel))/alt_dossel)))-1)
-
-
-def ras(iaf):
-    return ((iaf/10)*ras1)+(((4-iaf)/10)*ras0)
-
-
-def raa(iaf):
-    return ((iaf/20)*raa1)+(((4-iaf)/20)*raa0)
-
-
-def hc(raa, rac):
-    return (1.15*1005*0.10)/(rac+raa)
-
-
-def he(hc, HS, ndvi):
-    return fr*hc+(1-fr)*HS
-
-
-def ge(rne):
-    return (0.3236*rne)-51.52
-
-
-def lee(rne, he, ge):
-    return rne-he-ge
-
-
-def lambda_et(emissividade_veg, emissividade_solo):
-    # Confirmar dados de temperatura e 1e6
-    return ((2.501-0.00236*((temp*(emissividade_veg+emissividade_solo))-273.16))*(1e6))
-
-
-def et(lee, lambda_et):
-    return (3600*lee)/lambda_et
+    return et

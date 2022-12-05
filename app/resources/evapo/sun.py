@@ -1,8 +1,6 @@
-import pandas as pd
 import math
 
-
-def getJD(mon, day, yr, hr, min, sec):
+def get_julian_day(mon, day, yr, hr, min, sec):
     m = float(mon)
     d = float(day)
     y = float(yr)
@@ -20,12 +18,11 @@ def getJD(mon, day, yr, hr, min, sec):
     JD = round(JD * 1000000) / 1000000
     return JD
 
-
-def solarPosition(JD, lat, lon):
+def solar_position(mon, day, yr, hr, min, lat, lon):
 
     # /* Solar position, ecliptic coordinates */
     dr = math.pi / 180.
-    JD = float(JD)
+    JD = float(get_julian_day(mon, day, yr, hr, min, 0))
     T = (JD - 2451545.0) / 36525.0
     L0 = 280.46645 + 36000.76983 * T + 0.0003032 * T * T
     M = 357.52910 + 35999.05030 * T - 0.0001559 * T * T - 0.00000048 * T * T * T
@@ -74,16 +71,9 @@ def solarPosition(JD, lat, lon):
     airm = (1.002432 * cosz * cosz + 0.148386 * cosz + 0.0096467) / (cosz *
                                                                      cosz * cosz + 0.149864 * cosz * cosz + 0.0102963 * cosz + 0.000303978)
 
-    print(elev, R)
+    return {'sun_elev': elev,'dist_earth_sun' : R}
 
 
-# Create the Timestamp object
-ts = pd.Timestamp(year=2017, month=11, day=10,
-                  hour=16, second=00, tz='America/Sao_Paulo')
-
-# # Print the Timestamp object
-# print(ts.to_julian_date())
 
 
-solarPosition(getJD(11, 10, 2017, 12, 00, 00), -29.131847, -51.453217)
-print(getJD(11, 10, 2017, 12, 00, 00))
+

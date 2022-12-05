@@ -1,48 +1,46 @@
 {% extends 'base/default.html' %}
 {% block body %}
-<div class="col-md-6">  
-    <div id="lineChartDemo"></div>
+{% set current_page= 'station' %}
+<div class="col-md-12">
+  <div class="tile">
+    <h3 class="tile-title">Tabela com informações estatistiscas</h3>
+    <div class="table table-responsive table-hover">
+      <table class="table">
+        <th>Hora</th>
+        <th>Minimo</th>
+        <th>Maximo</th>
+        <th>Media</th>
+        <th>Mediana</th>
+        <th>Desvio Pdrão</th>
+        <th>Variancia</th>
+        <tbody>
+          {% for key,value in data.iterrows() %}
+          <tr>
+            <td>{{value['datetime'].time()}}</td>
+            <td>{{"%.4f"|format(value['min'])}}</td>
+            <td>{{"%.4f"|format(value['max'])}}</td>
+            <td>{{"%.4f"|format(value['mean'])}}</td>
+            <td>{{"%.4f"|format(value['median'])}}</td>
+            <td>{{"%.4f"|format(value['std'])}}</td>
+            <td>{{"%.4f"|format(value['var'])}}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
 </div>
-<div class="col-md-6">    
-    <div id="pieChartDemo"></div>
+<div class="col-md-12">
+  <div id="lineChartDemo1"></div>
 </div>
 {% endblock %}
-
-
 {% block script %}
 <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 <script type="text/javascript">
 
-  x = ["January", "February", "March", "April", "May"]
-  datay1 = [65, 59, 80, 81, 56]
-  datay2 = [28, 48, 40, 19, 86]
+  var graphs = {{ graphJSON | safe}};
 
-  var pdata = [
-    {
-      value: 300,
-      color: "#46BFBD",
-      highlight: "#5AD3D1",
-      label: "Complete"
-    },
-    {
-      value: 50,
-      color: "#F7464A",
-      highlight: "#FF5A5E",
-      label: "In-Progress"
-    }
-  ]
-
-  var data = [
-    { x: x, y: datay1, mode: "lines", name: 'Maximo' },
-    { x: x, y: datay2, mode: "lines", name: 'Minimo' },
-  ]
-
-  var pdata = [
-    { labels: x, values: datay1, type: "pie", sort: false },
-  ]
-  Plotly.newPlot("lineChartDemo", data, { title: 'Evapotranspiração Mensal' });
-  Plotly.newPlot("pieChartDemo", pdata, {});
-
+  Plotly.plot('lineChartDemo1', graphs);
 
 </script>
 {% endblock %}
