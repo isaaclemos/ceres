@@ -30,3 +30,4 @@ termcolor-whl==1.1.2
 urllib3==1.26.11
 Werkzeug==2.2.2
 yaspin==2.2.0
+gunicorn
