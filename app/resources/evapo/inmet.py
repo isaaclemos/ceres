@@ -1,6 +1,6 @@
 from inmetpy.stations import InmetStation
 
-cod_estacoes = ["A840"]
+cod_estacoes = "A840"
 
 def get_inmet_data(date, time,cod_station):
     inmet = InmetStation()    

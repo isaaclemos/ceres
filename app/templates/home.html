@@ -1,9 +1,11 @@
 {% extends 'base/default.html' %}
 {% set active_page= 'station' %}
 {% block body %}
-<div class="col-md-12">  <div class="tile">
-  <div id="lineChart"></div>
-</div></div>
+<div class="col-md-12">
+  <div class="tile">
+    <div id="lineChart"></div>
+  </div>
+</div>
 <div class="col-md-12">
   <div class="tile">
     <h3 class="tile-title">Tabela com informações estatistiscas</h3>
@@ -19,7 +21,7 @@
         <tbody>
           {% for key,value in data.iterrows() %}
           <tr>
-            <td>{{value['datetime'].time()}}</td>
+            <td>{{value['datetime'].strftime('%H:%M')}}</td>
             <td>{{"%.4f"|format(value['min'])}}</td>
             <td>{{"%.4f"|format(value['max'])}}</td>
             <td>{{"%.4f"|format(value['mean'])}}</td>
