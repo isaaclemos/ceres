@@ -1,6 +1,9 @@
 {% extends 'base/default.html' %}
 {% block body %}
-{% set current_page= 'station' %}
+{% set active_page= 'station' %}
+<div class="col-md-12">
+  <div id="lineChartDemo1"></div>
+</div>
 <div class="col-md-12">
   <div class="tile">
     <h3 class="tile-title">Tabela com informações estatistiscas</h3>
@@ -29,9 +32,6 @@
       </table>
     </div>
   </div>
-</div>
-<div class="col-md-12">
-  <div id="lineChartDemo1"></div>
 </div>
 {% endblock %}
 {% block script %}
