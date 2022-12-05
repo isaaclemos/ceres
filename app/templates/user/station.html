@@ -12,20 +12,22 @@
                         <th>Altitude</th>
                         <th>Altura</th>
                         <th>Altura Dossel</th>
-                        <th>Coordenadas</th>
+                        <th>Latitude</th>
+                        <th>Longitude</th>
                         <th>Cod INMET</th>
                         <th>Ações</th>
                     </tr>
                 </thead>
                 <tbody>
-                    {% for i in range(1,5) %}
+                    {% for station in stations %}
                     <tr>
-                        <td>24:F5:AA:5F:5A:34</td>
-                        <td>248m</td>
-                        <td>2m</td>
-                        <td>2m</td>                       
-                        <td>5656565656</td>
-                        <td>604</td>
+                        <td>{{station.mac_address}}</td>
+                        <td>{{station.altitude}}m</td>
+                        <td>{{station.altura}}m</td>
+                        <td>{{station.altura_dossel}}m</td>                       
+                        <td>{{station.latitude}}</td>
+                        <td>{{station.longitude}}</td>
+                        <td>{{station.cod_inmet}}</td>
                         <td>
                             <a class="btn btn-info" href="#">Dados</a>
                             
