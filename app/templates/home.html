@@ -1,9 +1,9 @@
 {% extends 'base/default.html' %}
-{% block body %}
 {% set active_page= 'station' %}
-<div class="col-md-12">
-  <div id="lineChartDemo1"></div>
-</div>
+{% block body %}
+<div class="col-md-12">  <div class="tile">
+  <div id="lineChart"></div>
+</div></div>
 <div class="col-md-12">
   <div class="tile">
     <h3 class="tile-title">Tabela com informações estatistiscas</h3>
@@ -40,7 +40,7 @@
 
   var graphs = {{ graphJSON | safe}};
 
-  Plotly.plot('lineChartDemo1', graphs);
+  Plotly.plot('lineChart', graphs);
 
 </script>
 {% endblock %}
