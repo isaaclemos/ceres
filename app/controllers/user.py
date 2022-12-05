@@ -5,6 +5,7 @@ from flask import (Blueprint, flash, jsonify, redirect, render_template,
                    request, url_for)
 from flask_login import current_user, login_required
 
+
 from app.ext.database import db
 from app.models import Information, User
 
@@ -22,7 +23,7 @@ def index():
     df=pd.read_sql_query(db.select(Information).filter(Information.station_id==1), db.engine)
 
     fig=px.line(df,x='datetime',y=['min','max','mean','median','std','var'],title="Evapotranspiração horaria",
-    labels={'time':"Hora", 'value': 'Valor', 'variable':'Informações ET:'},template='plotly_white')    
+    labels={'datetime': 'Data' ,'value': 'Valor', 'variable':'Informações ET:'},template='plotly_white')    
     fig.update_layout(title_x=0.5, xaxis={'title':'Hora'} ,yaxis={'title':''})
     return render_template('home.html',graphJSON=fig.to_json(), data=df, title =f"Evaportranspiração de {df['datetime'][0].date().strftime('%d/%m/%Y')}")
 
