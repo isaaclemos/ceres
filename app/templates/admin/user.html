@@ -31,7 +31,8 @@
                         <td><a class="btn btn-info" href="{{ url_for('admin.stations_by_user', id=user.id) }}"
                                 title="Estações"><i class="fa-brands fa-watchman-monitoring"></i></a></td>
                         <td>
-                            <a type="button" class="btn btn-primary" href="{{ url_for('admin.user_edit', id=user.id) }}"><i class="fas fa-edit"></i></a>
+                            <a type="button" class="btn btn-primary"
+                                href="{{ url_for('admin.user_edit', id=user.id) }}"><i class="fas fa-edit"></i></a>
                             <button class="btn btn-danger" data-toggle="modal" id="deletebtn"
                                 onclick="deleteUser('{{ url_for('admin.user_delete', id=user.id) }}')"
                                 data-target="#deletemodal" title="Remover"><i class="fa-solid fa-trash"></i></button>
@@ -80,8 +81,11 @@
                         </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
-                    <button type="submit" class="btn btn-primary">Salvar</button>
+                    <button type="submit" class="btn btn-primary"><i
+                            class="fa fa-fw fa-lg fa-check-circle"></i>Salvar</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">
+                        <i class="fa fa-fw fa-lg fa-times-circle"></i>Cancelar
+                    </button>
                 </div>
                 </form>
             </div>
@@ -98,8 +102,10 @@
                     </button>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
-                    <a id="btnDeleteConfirm" class="btn btn-primary">Remover</a>
+                    <a id="btnDeleteConfirm" class="btn btn-primary"><i
+                            class="fa fa-fw fa-lg fa-check-circle"></i>Remover</a>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal"> <i
+                            class="fa fa-fw fa-lg fa-times-circle"></i>Cancelar</button>
                 </div>
             </div>
         </div>

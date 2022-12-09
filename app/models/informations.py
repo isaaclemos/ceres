@@ -13,6 +13,6 @@ class Information(db.Model):
     var = db.Column(db.Numeric, nullable=False)
     csv_file = db.Column(db.String, nullable=False)
     img_file = db.Column(db.String, nullable=False)
-    
+    station = db.relationship('Station')
 
 

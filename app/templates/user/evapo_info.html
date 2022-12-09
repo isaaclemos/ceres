@@ -1,0 +1,48 @@
+{% extends 'base/default.html' %}
+{% set active_page= 'station' %}
+{% block body %}
+<div class="col-md-12">
+  <div class="tile">
+    <div id="lineChart"></div>
+  </div>
+</div>
+<div class="col-md-12">
+  <div class="tile">
+    <h3 class="tile-title">Tabela com informações estatistiscas</h3>
+    <div class="table table-responsive table-hover">
+      <table class="table">
+        <th>Hora</th>
+        <th>Minimo</th>
+        <th>Maximo</th>
+        <th>Media</th>
+        <th>Mediana</th>
+        <th>Desvio Pdrão</th>
+        <th>Variancia</th>
+        <tbody>
+          {% for info in informations%}
+          <tr>
+            <td>{{info.datetime.strftime('%H:%M')}}</td>
+            <td>{{"%.4f"|format(info.min)}}</td>
+            <td>{{"%.4f"|format(info.max)}}</td>
+            <td>{{"%.4f"|format(info.mean)}}</td>
+            <td>{{"%.4f"|format(info.median)}}</td>
+            <td>{{"%.4f"|format(info.std)}}</td>
+            <td>{{"%.4f"|format(info.var)}}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}
+{% block script %}
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+<script type="text/javascript">
+
+  var graphs = {{ graphJSON | safe}};
+
+  Plotly.plot('lineChart', graphs);
+
+</script>
+{% endblock %}

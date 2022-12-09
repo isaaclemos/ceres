@@ -44,18 +44,14 @@
       </div>
     </div>
     <ul class="app-menu">
-      <li><a class="app-menu__item" href="{{ url_for('user.index') }}"><i
-            class="app-menu__icon fa fa-dashboard"></i><span class="app-menu__label">Dashboard</span></a></li>
+      <li><a class="app-menu__item" id="home" href="{{ url_for('user.index') }}"><i
+            class="app-menu__icon fa fa-dashboard"></i><span class="app-menu__label">Pagina inicial</span></a></li>
       <li><a class="app-menu__item" id="station" href="{{ url_for('user.stations') }}"><i
             class="app-menu__icon fa fa-dashboard"></i><span class="app-menu__label">Estações</span></a></li>
       {% if current_user.is_admin %}
       <li><a class="app-menu__item " id="user" href="{{url_for('admin.user')}}"><i
             class="app-menu__icon fa-solid fa-users"></i><span class="app-menu__label">Usuarios</span></a></li>
       {% endif %}
-
-
-      <li><a class="app-menu__item " id="profile" href="{{url_for('user.profile')}}"><i
-            class="app-menu__icon fa-solid fa-users"></i><span class="app-menu__label">Perfil</span></a></li>
     </ul>
   </aside>
   <main class="app-content">

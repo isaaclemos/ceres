@@ -1,48 +1,9 @@
 {% extends 'base/default.html' %}
-{% set active_page= 'station' %}
+{% set active_page ='home' %}
 {% block body %}
 <div class="col-md-12">
   <div class="tile">
-    <div id="lineChart"></div>
+    <div class="tile-body"><h3>Bem Vindo!</h3></div>
   </div>
 </div>
-<div class="col-md-12">
-  <div class="tile">
-    <h3 class="tile-title">Tabela com informações estatistiscas</h3>
-    <div class="table table-responsive table-hover">
-      <table class="table">
-        <th>Hora</th>
-        <th>Minimo</th>
-        <th>Maximo</th>
-        <th>Media</th>
-        <th>Mediana</th>
-        <th>Desvio Pdrão</th>
-        <th>Variancia</th>
-        <tbody>
-          {% for key,value in data.iterrows() %}
-          <tr>
-            <td>{{value['datetime'].strftime('%H:%M')}}</td>
-            <td>{{"%.4f"|format(value['min'])}}</td>
-            <td>{{"%.4f"|format(value['max'])}}</td>
-            <td>{{"%.4f"|format(value['mean'])}}</td>
-            <td>{{"%.4f"|format(value['median'])}}</td>
-            <td>{{"%.4f"|format(value['std'])}}</td>
-            <td>{{"%.4f"|format(value['var'])}}</td>
-          </tr>
-          {% endfor %}
-        </tbody>
-      </table>
-    </div>
-  </div>
-</div>
-{% endblock %}
-{% block script %}
-<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
-<script type="text/javascript">
-
-  var graphs = {{ graphJSON | safe}};
-
-  Plotly.plot('lineChart', graphs);
-
-</script>
 {% endblock %}

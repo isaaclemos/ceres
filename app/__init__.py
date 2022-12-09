@@ -11,12 +11,11 @@ controllers = [
     service_bp
 ]
 
-
 def create_app():
     app = Flask(__name__)
-
-    for c in controllers:
-        app.register_blueprint(c)
+    
+    for controller in controllers:
+        app.register_blueprint(controller)
 
     database.init_app(app)
     login_manager.init_app(app)

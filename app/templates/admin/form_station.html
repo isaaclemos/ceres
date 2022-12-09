@@ -36,7 +36,9 @@
             <input class="form-control" type="text" name="cod_inmet" value="{{station.cod_inmet}}" >
           </div>
           <div class="form-group col-md-4 align-self-end">            
-            <button class="btn btn-primary" type="submit"><i class="fa fa-fw fa-lg fa-check-circle"></i>Enviar</button>
+            <button class="btn btn-primary" type="submit"><i class="fa fa-fw fa-lg fa-check-circle"></i>Salvar</button>
+            <a class="btn btn-secondary" href="{{ url_for('admin.stations_by_user', id=station.user_id)}}"> <i class="fa fa-fw fa-lg fa-times-circle"></i>Cancelar
+            </a>
           </div>
         </form>
       </div>

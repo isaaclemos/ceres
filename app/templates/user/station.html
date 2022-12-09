@@ -15,7 +15,7 @@
                         <th>Latitude</th>
                         <th>Longitude</th>
                         <th>Cod INMET</th>
-                        <th>Ações</th>
+                        <th>Informações</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -29,7 +29,7 @@
                         <td>{{station.longitude}}</td>
                         <td>{{station.cod_inmet}}</td>
                         <td>
-                            <a class="btn btn-info" href="#">Dados</a>
+                            <a class="btn btn-info" href="{{ url_for('user.et_info', id=current_user.id, date=date_now)}}"><i class="fa-solid fa-circle-info"></i></a>
                             
                         </td>
                     </tr>                

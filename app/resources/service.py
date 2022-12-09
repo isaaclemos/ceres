@@ -18,7 +18,7 @@ service_bp = Blueprint('service', __name__)
 def get_data():
 
     # JSON struct from POST
-    # {'mac_address': '', 'file': '', 'format': '', 'datetime': ''}
+    # {'mac_address':'','img_median':{'file':'','format': ''},'csv_thermal':'','datetime':''}
 
     mac_address = request.json['mac_address']
 
@@ -32,10 +32,10 @@ def get_data():
         if not os.path.exists(mac_address):
             os.makedirs(mac_address)
 
-        file_name = f"{mac_address}/{json['datetime']}.{json['format']}"
+        file_name = f"{mac_address}/{json['datetime']}.{json['img_median']['format']}"
 
         with open(file_name, 'wb') as img_file:
-            img_file.write(b64decode(json['file']))
+            img_file.write(b64decode(json['img_median']['file']))
             img_file.close()
 
         timedate = datetime.strptime(json['datetime'], '%Y-%m-%d %H:%M:%S')

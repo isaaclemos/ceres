@@ -1,7 +1,9 @@
+from datetime import datetime
+
 import pandas as pd
 import plotly.express as px
-from flask import (Blueprint, flash, jsonify, redirect, render_template,
-                   request, url_for)
+from flask import (Blueprint, flash, redirect, render_template, request,
+                   send_from_directory, url_for)
 from flask_login import current_user, login_required
 
 from app.ext.database import db
@@ -12,21 +14,30 @@ user_bp = Blueprint('user', __name__, url_prefix='/user')
 
 @user_bp.before_request
 @login_required
-def check_admin():
+def check_is_authenticated():
     if not current_user.is_authenticated:
         return redirect(url_for('auth.login'))
+
+
+@user_bp.route('/station/<int:id>/et/<date>', methods=['GET'])
+def et_info(id,date):
+
+    df = pd.read_sql_query(db.select(Information).filter(
+        Information.station_id == 1), db.engine)
+
+    informations = Information.query.filter_by(station_id=1).all()
+
+    fig = px.line(df, x='datetime', y=['min', 'max', 'mean', 'median', 'std', 'var'], title="Evapotranspiração horaria",
+                  labels={'datetime': 'Data', 'value': 'Valor', 'variable': 'Informações ET:'}, template='plotly_white')
+    fig.update_layout(title_x=0.5, xaxis={'title': ''}, yaxis={'title': ''})
+
+    return render_template('user/evapo_info.html', graphJSON=fig.to_json(), informations=informations, title=f"Evaportranspiração horaria: {df['datetime'][0].strftime('%d/%m/%Y')}")
 
 
 @user_bp.route('/index', methods=['GET'])
 def index():
 
-    df = pd.read_sql_query(db.select(Information).filter(
-        Information.station_id == 1), db.engine)
-        
-    fig = px.line(df, x='datetime', y=['min', 'max', 'mean', 'median', 'std', 'var'], title="Evapotranspiração horaria",
-                  labels={'datetime': 'Data', 'value': 'Valor', 'variable': 'Informações ET:'}, template='plotly_white')
-    fig.update_layout(title_x=0.5, xaxis={'title': ''}, yaxis={'title': ''})
-    return render_template('home.html', graphJSON=fig.to_json(), data=df, title=f"Evaportranspiração horaria: {df['datetime'][0].strftime('%d/%m/%Y')}")
+    return render_template('home.html', title='Pagina inicial')
 
 
 @user_bp.route('/profile', methods=['GET', 'POST'])
@@ -62,7 +73,7 @@ def profile():
     return render_template('user/profile.html', title='Perfil')
 
 
-@user_bp.route('/stations', methods=['GET'])
+@user_bp.route('/station', methods=['GET'])
 def stations():
     stations = current_user.stations
-    return render_template('user/station.html', title='Estações', stations=stations)
+    return render_template('user/station.html', title='Estações', stations=stations, date_now=datetime.now().date())
