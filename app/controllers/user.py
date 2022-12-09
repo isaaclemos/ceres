@@ -1,10 +1,10 @@
-from datetime import datetime
+from datetime import datetime, date
 
 import pandas as pd
 import plotly.express as px
-from flask import (Blueprint, flash, redirect, render_template, request,
-                   send_from_directory, url_for)
+from flask import Blueprint, flash, redirect, render_template, request, url_for,make_response
 from flask_login import current_user, login_required
+from sqlalchemy import func
 
 from app.ext.database import db
 from app.models import Information, User
@@ -19,19 +19,21 @@ def check_is_authenticated():
         return redirect(url_for('auth.login'))
 
 
-@user_bp.route('/station/<int:id>/et/<date>', methods=['GET'])
-def et_info(id,date):
 
+@user_bp.route('/station/<int:id>/et', methods=['GET', 'POST'])
+def et_info(id):
+    date_filter=request.form.get('date_filter')
+    if not date_filter:
+        date_filter = str(date.today())
+        
     df = pd.read_sql_query(db.select(Information).filter(
-        Information.station_id == 1), db.engine)
+        Information.station_id == id,  func.Date(Information.date_time)==date.fromisoformat(date_filter)).order_by('date_time'), db.engine)
 
-    informations = Information.query.filter_by(station_id=1).all()
-
-    fig = px.line(df, x='datetime', y=['min', 'max', 'mean', 'median', 'std', 'var'], title="Evapotranspiração horaria",
-                  labels={'datetime': 'Data', 'value': 'Valor', 'variable': 'Informações ET:'}, template='plotly_white')
+    fig = px.line(df, x='date_time', y=['min', 'max', 'mean', 'median', 'std', 'var'], title="Evapotranspiração horaria",
+                  labels={'time': 'Hora', 'value': 'Valor', 'variable': 'Informações ET:'}, template='plotly_white')
     fig.update_layout(title_x=0.5, xaxis={'title': ''}, yaxis={'title': ''})
 
-    return render_template('user/evapo_info.html', graphJSON=fig.to_json(), informations=informations, title=f"Evaportranspiração horaria: {df['datetime'][0].strftime('%d/%m/%Y')}")
+    return render_template('user/evapo_info.html', graphJSON=fig.to_json(), id=id ,informations=df, title=f"Evapotranspiração diaria.", date_filter=date_filter)
 
 
 @user_bp.route('/index', methods=['GET'])
@@ -76,4 +78,4 @@ def profile():
 @user_bp.route('/station', methods=['GET'])
 def stations():
     stations = current_user.stations
-    return render_template('user/station.html', title='Estações', stations=stations, date_now=datetime.now().date())
+    return render_template('user/station.html', title='Estações', stations=stations)

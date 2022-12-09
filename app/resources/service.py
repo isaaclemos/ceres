@@ -32,13 +32,13 @@ def get_data():
         if not os.path.exists(mac_address):
             os.makedirs(mac_address)
 
-        file_name = f"{mac_address}/{json['datetime']}.{json['img_median']['format']}"
+        timedate = datetime.strptime(json['datetime'], '%Y-%m-%d %H:%M:%S')
+
+        file_name = f"{mac_address}/{timedate}.{json['img_median']['format']}"
 
         with open(file_name, 'wb') as img_file:
             img_file.write(b64decode(json['img_median']['file']))
             img_file.close()
-
-        timedate = datetime.strptime(json['datetime'], '%Y-%m-%d %H:%M:%S')
 
         data_inmet = get_inmet_data(
             date=str(timedate.date()), time=str(timedate.time()), cod_station=station.cod_inmet)
@@ -50,11 +50,11 @@ def get_data():
         et = two_source_model(image=file_name, station=station, sun_values=sun_values,
                               vento=data_inmet['vento'], temp_kelvin=(273.15+data_inmet['temp']))
 
-        info = Information(station_id=station.id, datetime=timedate, min=np.nanmin(et), max=np.nanmax(et),
-                            std=np.nanstd(et), mean=np.nanmean(et),  var=np.nanvar(et),  median=np.nanmedian(et))
+        info = Information(station_id=station.id, date=timedate.date(), time=timedate.time(), min=np.nanmin(et), max=np.nanmax(et),
+                           std=np.nanstd(et), mean=np.nanmean(et),  var=np.nanvar(et),  median=np.nanmedian(et))
         info.img_file = file_name
         info.csv_file = file_name
-        
+
         db.session.add(info)
         db.session.commit()
 
