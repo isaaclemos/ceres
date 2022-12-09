@@ -1,8 +1,8 @@
-from datetime import datetime, date
+from datetime import date
 
 import pandas as pd
 import plotly.express as px
-from flask import Blueprint, flash, redirect, render_template, request, url_for,make_response
+from flask import Blueprint, flash, redirect, render_template, request, url_for
 from flask_login import current_user, login_required
 from sqlalchemy import func
 
@@ -19,21 +19,25 @@ def check_is_authenticated():
         return redirect(url_for('auth.login'))
 
 
-
 @user_bp.route('/station/<int:id>/et', methods=['GET', 'POST'])
-def et_info(id):
-    date_filter=request.form.get('date_filter')
-    if not date_filter:
+@user_bp.route('/station/<int:id>/et/<date_filter>',  methods=['GET', 'POST'])
+def et_info(id, date_filter=None):
+
+    filter = request.form.get('date_filter')
+
+    if filter and request.method == 'POST':
+        return redirect(url_for('user.et_info', id=id, date_filter=filter))
+    elif not date_filter:
         date_filter = str(date.today())
-        
+
     df = pd.read_sql_query(db.select(Information).filter(
-        Information.station_id == id,  func.Date(Information.date_time)==date.fromisoformat(date_filter)).order_by('date_time'), db.engine)
+        Information.station_id == id,  func.Date(Information.date_time) == date.fromisoformat(date_filter)).order_by('date_time'), db.engine)
 
     fig = px.line(df, x='date_time', y=['min', 'max', 'mean', 'median', 'std', 'var'], title="Evapotranspiração horaria",
                   labels={'time': 'Hora', 'value': 'Valor', 'variable': 'Informações ET:'}, template='plotly_white')
     fig.update_layout(title_x=0.5, xaxis={'title': ''}, yaxis={'title': ''})
 
-    return render_template('user/evapo_info.html', graphJSON=fig.to_json(), id=id ,informations=df, title=f"Evapotranspiração diaria.", date_filter=date_filter)
+    return render_template('user/evapo_info.html', graphJSON=fig.to_json(), id=id, informations=df, title=f"Evapotranspiração diaria.", date_filter=date_filter)
 
 
 @user_bp.route('/index', methods=['GET'])
