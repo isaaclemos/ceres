@@ -6,14 +6,16 @@
     <div class="tile-title-w-btn">
       <h3 class="title"></h3>
       <form action="" method="post">
-        <div class="form-inline">        
-            <input type="text" class="form-control" id="demoDate"  value="{{date_filter}}" name="date_filter">
-              <button type="submit" class="btn btn-primary">
-                  <i class="fa fa-plus"></i> Filtrar
-              </button>    
+        <div class="form-inline">
+          <div class="form-group">
+            <div class="input-group">
+              <input type="text" id="demoDate" value="{{date_filter}}" name="date_filter" class="form-control">
+              <span title="Filtrar"><button type="submit" class="btn btn-primary"><i class="fa fa-filter"></i></button></span>
+            </div>
+          </div>
         </div>
       </form>
-  </div>
+    </div>
     <div id="lineChart"></div>
   </div>
   <div class="tile">
