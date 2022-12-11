@@ -26,3 +26,6 @@ admin.get('/user/<int:user_id>/station/<int:station_id>/edit', 'admin#station_ed
 admin.post('user/<int:user_id>/station/<int:station_id>/update', 'admin#station_update')
 admin.get('/user/<int:user_id>/station/<int:station_id>/delete', 'admin#station_delete')
 
+api = Router.namespace('/api/v1')
+api.post('/', 'twosource#api_v1')
+
