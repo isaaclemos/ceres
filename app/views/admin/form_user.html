@@ -1,19 +1,19 @@
 {% extends 'base/default.html' %}
-{% set active_page ='profile' %}
+{% set active_page ='user' %}
 {% block body %}
 <div class="col-md-6">
   <div class="tile">
-    <h3 class="tile-title">Dados do usuário</h3>
+    <h3 class="tile-title">Cadastro de Usuario</h3>
     <div class="tile-body">
-      <form action="{{url_for('user.profile')}}" method="POST">
+      <form action="{{ url_for('admin.user_update', id=user.id)}}" method="POST">
         <div class="form-group">
           <label class="control-label">Nome</label>
-          <input class="form-control" name="user_name" type="text" value="{{current_user.user_name}}"
+          <input class="form-control" name="user_name" type="text" value="{{user.user_name}}"
             placeholder="Digite o nome do usuário">
         </div>
         <div class="form-group">
           <label class="control-label">Email</label>
-          <input class="form-control" name="email" type="text" value="{{current_user.email}}"
+          <input class="form-control" name="email" type="text" value="{{user.email}}"
             placeholder="Digite o email de acesso">
         </div>
         <div class="form-group">
@@ -24,9 +24,16 @@
           <label class="control-label">Repita senha</label>
           <input class="form-control" name="password2" type="password" placeholder="Repita a senha">
         </div>
+        <div class="form-group">
+          <div class="form-check">
+            <label class="form-check-label">
+              <input class="form-check-input" type="checkbox" {{ 'checked' if user.is_admin}} name="is_admin">Admin
+            </label>
+          </div>
+        </div>
         <div class="tile-footer">
           <button class="btn btn-primary" type="submit" name="form_user" value="edit"><i class="fa fa-fw fa-lg fa-check-circle"></i>Salvar</button>
-          &nbsp;&nbsp;&nbsp;<a class="btn btn-secondary" href="{{ url_for('user.index')}}"><i
+          &nbsp;&nbsp;&nbsp;<a class="btn btn-secondary" href="{{ url_for('admin.user_show')}}"><i
               class="fa fa-fw fa-lg fa-times-circle" ></i>Cancelar</a>
         </div>
       </form>

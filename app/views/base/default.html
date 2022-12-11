@@ -46,10 +46,10 @@
     <ul class="app-menu">
       <li><a class="app-menu__item" id="home" href="{{ url_for('user.index') }}"><i
             class="app-menu__icon fa-solid fa-house"></i><span class="app-menu__label">Pagina inicial</span></a></li>
-      <li><a class="app-menu__item" id="station" href="{{ url_for('user.stations') }}"><i
+      <li><a class="app-menu__item" id="station" href="{{ url_for('station.station') }}"><i
             class="app-menu__icon fa-brands fa-watchman-monitoring"></i><span class="app-menu__label">Estações</span></a></li>
       {% if current_user.is_admin %}
-      <li><a class="app-menu__item " id="user" href="{{url_for('admin.user')}}"><i
+      <li><a class="app-menu__item " id="user" href="{{url_for('admin.user_show')}}"><i
             class="app-menu__icon fa-solid fa-users"></i><span class="app-menu__label">Usuarios</span></a></li>
       {% endif %}
     </ul>

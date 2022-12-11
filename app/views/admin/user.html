@@ -28,13 +28,13 @@
                         <td>{{ user.user_name }}</td>
                         <td>{{ user.email }}</td>
                         <td>{{ 'Sim' if user.is_admin else 'Não' }}</td>
-                        <td><a class="btn btn-info" href="{{ url_for('admin.stations_by_user', id=user.id) }}"
+                        <td><a class="btn btn-info" href="{{ url_for('admin.stations_by_user', user_id=user.id) }}"
                                 title="Estações"><i class="fa-brands fa-watchman-monitoring"></i></a></td>
                         <td>
                             <a type="button" class="btn btn-primary"
                                 href="{{ url_for('admin.user_edit', id=user.id) }}"><i class="fas fa-edit"></i></a>
                             <button class="btn btn-danger" data-toggle="modal" id="deletebtn"
-                                onclick="deleteUser('{{ url_for('admin.user_delete', id=user.id) }}')"
+                                onclick='deleteUser("{{ url_for("admin.user_delete", id=user.id) }}")'
                                 data-target="#deletemodal" title="Remover"><i class="fa-solid fa-trash"></i></button>
                         </td>
                     </tr>
@@ -54,7 +54,7 @@
                     </button>
                 </div>
                 <div class="modal-body">
-                    <form action="{{ url_for('admin.user_store')}}" method="POST">
+                    <form action="{{ url_for('admin.user_create')}}" method="POST">
                         <div class="form-group">
                             <label class="control-label">Nome</label>
                             <input class="form-control" name="user_name" type="text"

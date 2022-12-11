@@ -3,7 +3,7 @@ from app.models import User
 
 
 login_manager = LoginManager()
-login_manager.login_view = 'auth.login'
+login_manager.login_view = 'auth.index'
 login_manager.login_message = 'Por favor faça o login!'
 
 @login_manager.user_loader

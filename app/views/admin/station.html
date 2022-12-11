@@ -35,10 +35,10 @@
                         <td>{{station.cod_inmet}}</td>
                         <td>
                             <a class="btn btn-success"
-                                href="{{ url_for('admin.edit_station', id=station.user_id, id_station=station.id) }}"
+                                href="{{ url_for('admin.station_edit', station_id=station.id, user_id=station.user_id) }}"
                                 title="Editar"><i class="fas fa-edit"></i></a>
                             <button class="btn btn-danger" data-toggle="modal" id="deletebtn" onclick=deleteUser('{{
-                                url_for('admin.station_delete', id_station=station.id, id=station.user_id) }}')
+                                url_for('admin.station_delete',  station_id=station.id, user_id=station.user_id) }}')
                                 data-target="#deletemodal" title="Remover"><i class="fa-solid fa-trash"></i></button>
                         </td>
                     </tr>
@@ -58,7 +58,7 @@
                     </button>
                 </div>
                 <div class="modal-body">
-                    <form class="row" action="{{ url_for('admin.station_store', id=user.id) }}" method="post">
+                    <form class="row" action="{{ url_for('admin.station_create', user_id=user.id) }}" method="post">
                         <div class="form-group col-md-6">
                             <label class="control-label">MAC Adress</label>
                             <input class="form-control" type="text" name="mac_address" />
