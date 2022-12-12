@@ -24,16 +24,13 @@ class TwosourceController:
         station = Station.query.filter_by(mac_address=mac_address).first()
 
         if station:
-            path = f'{os.path.abspath(os.curdir)}/app/resources/station_files/{mac_address}'
-
+            path = path = os.path.join(os.getcwd(), "station_files")
+            
             json = request.json
-
-            if not os.path.exists(path):
-                os.makedirs(path)
 
             date_time = datetime.strptime(json['datetime'], '%Y-%m-%d %H:%M:%S')
 
-            file_name = f"{date_time}.{json['img_median']['format']}"
+            file_name = f"{mac_address} {date_time}.{json['img_median']['format']}"
 
             with open(f'{path}/{file_name}', 'wb') as img_file:
                 img_file.write(b64decode(json['img_median']['file']))
