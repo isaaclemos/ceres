@@ -1,4 +1,5 @@
 import math
+from datetime import datetime
 
 def get_julian_day(mon, day, yr, hr, min, sec):
     m = float(mon)
@@ -18,11 +19,11 @@ def get_julian_day(mon, day, yr, hr, min, sec):
     JD = round(JD * 1000000) / 1000000
     return JD
 
-def solar_position(mon, day, yr, hr, min, lat, lon):
+def solar_position(date_time: datetime, lat:str, lon:str):
 
     # /* Solar position, ecliptic coordinates */
     dr = math.pi / 180.
-    JD = float(get_julian_day(mon, day, yr, hr, min, 0))
+    JD = float(get_julian_day(date_time.month, date_time.day, date_time.year, date_time.hour, date_time.minute, 0))
     T = (JD - 2451545.0) / 36525.0
     L0 = 280.46645 + 36000.76983 * T + 0.0003032 * T * T
     M = 357.52910 + 35999.05030 * T - 0.0001559 * T * T - 0.00000048 * T * T * T

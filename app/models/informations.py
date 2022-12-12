@@ -1,6 +1,7 @@
 from app.ext.database import db
+import numpy as np
 
-class Information(db.Model):
+class Information(db.Model):    
     
     id = db.Column(db.Integer, primary_key=True)
     station_id = db.Column(db.Integer, db.ForeignKey('station.id'), nullable=False) 
@@ -15,4 +16,13 @@ class Information(db.Model):
     img_file = db.Column(db.String, nullable=False)
     station = db.relationship('Station')
 
+    def __init__(self,station_id, date_time, et) -> None:
+        self.station_id=station_id
+        self.date_time = date_time
+        self.min=np.nanmin(et)
+        self.max=np.nanmax(et)
+        self.std=np.nanstd(et)
+        self.mean=np.nanmean(et)
+        self.var=np.nanvar(et)
+        self.median=np.nanmedian(et)
 

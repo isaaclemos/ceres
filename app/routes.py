@@ -28,4 +28,5 @@ admin.get('/user/<int:user_id>/station/<int:station_id>/delete', 'admin#station_
 
 api = Router.namespace('/api/v1')
 api.post('/', 'twosource#api_v1')
+api.get('/<name>','evapo#show_image')
 

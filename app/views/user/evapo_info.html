@@ -1,5 +1,8 @@
 {% extends 'base/default.html' %}
 {% set active_page= 'station' %}
+{% block header %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/viewerjs/1.11.1/viewer.css">
+{% endblock %}
 {% block body %}
 <div class="col-md-12">
   <div class="tile">
@@ -10,7 +13,8 @@
           <div class="form-group">
             <div class="input-group">
               <input type="text" id="demoDate" value="{{date_filter}}" name="date_filter" class="form-control">
-              <span title="Filtrar"><button type="submit" class="btn btn-primary"><i class="fa fa-filter"></i></button></span>
+              <span title="Filtrar"><button type="submit" class="btn btn-primary"><i
+                    class="fa fa-filter"></i></button></span>
             </div>
           </div>
         </div>
@@ -29,6 +33,7 @@
         <th>Mediana</th>
         <th>Desvio Pdrão</th>
         <th>Variancia</th>
+        <th>Imagem</th>
         <tbody>
           {% for i, value in informations.iterrows()%}
           <tr>
@@ -39,6 +44,10 @@
             <td>{{"%.4f"|format(value['median'])}}</td>
             <td>{{"%.4f"|format(value['std'])}}</td>
             <td>{{"%.4f"|format(value['var'])}}</td>
+            <td>
+              <button class="btn btn-info" onclick=show_image("{{url_for('evapo.show_image',
+                name=value['img_file'])}}")><i class="fa fa-image"></i></button>
+            </td>
           </tr>
           {% endfor %}
         </tbody>
@@ -50,6 +59,7 @@
 {% block script %}
 <script src="{{ url_for('static', filename='js/plugins/bootstrap-datepicker.min.js')}}"></script>
 <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/viewerjs/1.11.1/viewer.min.js"></script>
 <script type="text/javascript">
 
   var graphs = {{ graphJSON | safe}};
@@ -61,6 +71,19 @@
     autoclose: true,
     todayHighlight: true
   });
+</script>
+<script>
+  function show_image(img) {
+    var image = new Image();
 
+    image.src = img;
+
+    var viewer = new Viewer(image, {
+      hidden: function () {
+        viewer.destroy();
+      },
+    });
+    viewer.show();
+  };
 </script>
 {% endblock %}
