@@ -19,5 +19,5 @@ with open('2017-11-10 19:00:00.jpg', 'rb') as img_file:
         'datetime': '2017-11-10 11:00:00'
     }
 
-    resp = post(url='http://127.0.0.1:5000/api/v1', json=json)
+    resp = post(url='https://ceres.up.railway.app/api/v1', json=json)
     print(resp)
