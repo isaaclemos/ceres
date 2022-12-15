@@ -33,16 +33,24 @@ class EvapoController:
 
         if not date_filter:
             date_filter = date.today()
+            
         if station:
-            df = pd.read_sql_query(db.select(Information).filter(Information.station_id == id,  func.Date(
-                Information.date_time) == date_filter).order_by('date_time'), db.engine)
+            query = db.select(Information).where(Information.station_id == id, func.Date(
+                Information.date_time) == date_filter).order_by('date_time')
 
-            fig = px.line(df, x='date_time', y=['min', 'max', 'mean', 'median', 'std', 'var'], title="Evapotranspiração horaria",
-                          labels={'time': 'Hora', 'value': 'Valor', 'variable': 'Informações ET:'}, template='plotly_white')
+            df = pd.read_sql_query(query, db.engine)
+
+            y = ['min', 'max', 'mean', 'median', 'std', 'var']
+            labels = {'time': 'Hora', 'value': 'valor',
+                      'variable': 'Variavel'}
+            title = "Evapotranspiração horaria"
+
+            fig = px.line(df, x='date_time', y=y, title=title,
+                          labels=labels, template='plotly_white')
             fig.update_layout(title_x=0.5, xaxis={
-                'title': ''}, yaxis={'title': ''})
+                              'title': ''}, yaxis={'title': ''})
 
-            return render_template('user/evapo_info.html', graphJSON=fig.to_json(), id=id, informations=df, title=f"Evapotranspiração diaria.", date_filter=date_filter)
+            return render_template('user/evapo_info.html', graphJSON=fig.to_json(), id=id, informations=df, title=title, date_filter=date_filter)
         else:
             return redirect(url_for('station.station'))
 
