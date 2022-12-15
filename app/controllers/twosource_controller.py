@@ -18,7 +18,7 @@ class TwosourceController:
         json_pattern = {'mac_address': '', 'img_median': {
             'file': '', 'format': ''}, 'csv_thermal': '', 'datetime': ''}
 
-        mac_address = request.json['mac_address']
+        mac_address = request.json['mac_address'].upper()
 
         station = Station.query.filter_by(mac_address=mac_address).first()
 
@@ -27,7 +27,7 @@ class TwosourceController:
             
             json = request.json
 
-            date_time = datetime.strptime(json['datetime'], '%Y-%m-%d %H:%M:%S')
+            date_time = datetime.fromisoformat(json['datetime'])
 
             file_name = f"{mac_address} {date_time}.{json['img_median']['format']}"
 
