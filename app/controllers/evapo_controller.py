@@ -23,7 +23,7 @@ class EvapoController:
     def et_info(self, id):
 
         date_filter = request.form.get('date_filter')
-        
+
         return redirect(url_for('evapo.et_info_today', id=id, date_filter=date_filter))
 
     def et_info_today(self, id, date_filter):
@@ -32,10 +32,10 @@ class EvapoController:
             id=id, user_id=current_user.id).first()
 
         if not date_filter:
-            date_filter = str(date.today())
+            date_filter = date.today()
         if station:
             df = pd.read_sql_query(db.select(Information).filter(Information.station_id == id,  func.Date(
-                Information.date_time) == date.fromisoformat(date_filter)).order_by('date_time'), db.engine)
+                Information.date_time) == date_filter).order_by('date_time'), db.engine)
 
             fig = px.line(df, x='date_time', y=['min', 'max', 'mean', 'median', 'std', 'var'], title="Evapotranspiração horaria",
                           labels={'time': 'Hora', 'value': 'Valor', 'variable': 'Informações ET:'}, template='plotly_white')
