@@ -11,6 +11,6 @@ def get_inmet_data(date_time: datetime, cod_station: str):
     filter={}
 
     for index, row in data.iterrows():
-        if str(row['DATETIME']).__contains__(date_time.time()):
+        if row['DATETIME'].hour == date_time.hour:
             filter = {'temp': row['TEMP'], 'vento': row['WSPD']}
     return filter

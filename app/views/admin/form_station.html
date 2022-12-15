@@ -4,7 +4,7 @@
 {% block body %}
   <div class="col-md-12">
     <div class="tile">
-      <h3 class="tile-title">Cadastro</h3>
+      <h3 class="tile-title">Atualizar Estação</h3>
       <div class="tile-body">
         <form class="row" action="{{ url_for('admin.station_update', user_id=station.user_id, station_id=station.id) }}" method="post">
           <div class="form-group col-md-6">
@@ -18,7 +18,7 @@
           <div class="form-group col-md-3">
             <label class="control-label">Longitude</label>
             <input class="form-control" type="text" name="longitude" value="{{station.longitude}}">
-          </div>
+          </div>Cadastro
           <div class="form-group col-md-3">
             <label class="control-label">Altitude</label>
             <input class="form-control" type="text" name="altitude" value="{{station.altitude}}" >

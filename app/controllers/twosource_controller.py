@@ -2,7 +2,6 @@ import os
 from base64 import b64decode
 from datetime import datetime
 
-import numpy as np
 from flask import make_response, request
 
 from app.ext.database import db
@@ -24,7 +23,7 @@ class TwosourceController:
         station = Station.query.filter_by(mac_address=mac_address).first()
 
         if station:
-            path = path = os.path.join(os.getcwd(), "station_files")
+            path = os.path.abspath("station_files")
             
             json = request.json
 
@@ -40,7 +39,7 @@ class TwosourceController:
 
             sun_values = solar_position(date_time, station.latitude, station.longitude)
 
-            et = two_source_model(image=file_name, station=station, sun_values=sun_values,
+            et = two_source_model(image=f'{path}/{file_name}', station=station, sun_values=sun_values,
                                   vento=data_inmet['vento'], temp_kelvin=(273.15+data_inmet['temp']))
 
             info = Information(station_id=station.id, date_time=date_time, et=et)

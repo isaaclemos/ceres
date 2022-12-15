@@ -43,5 +43,5 @@ class EvapoController:
         return render_template('user/evapo_info.html', graphJSON=fig.to_json(), id=id, informations=df, mac_address=station.mac_address, title=f"Evapotranspiração diaria.", date_filter=date_filter)
 
     def show_image(self, name=None):
-        path = os.path.join(os.getcwd(), "station_files")
+        path = os.path.abspath("station_files")
         return send_from_directory(path, name)

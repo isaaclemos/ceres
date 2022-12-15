@@ -7,7 +7,10 @@ from app.models.user import User
 class AuthController:
     
     def index(self):
-        return render_template("auth/login.html", user=current_user)
+        if current_user.is_authenticated:
+            return redirect(url_for('user.index'))
+        
+        return render_template("auth/login.html")
         
     def login(self):        
         email = request.form.get('email')

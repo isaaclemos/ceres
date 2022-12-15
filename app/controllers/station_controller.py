@@ -25,13 +25,13 @@ class StationController:
 
         station = Station()
         station.user_id = user_id
-        station.mac_address = request.form.get('mac_address')
+        station.mac_address = request.form.get('mac_address').upper()
         station.altitude = request.form.get('altitude')
         station.altura = request.form.get('altura')
         station.altura_dossel = request.form.get('altura_dossel')
         station.latitude = request.form.get('latitude')
         station.longitude = request.form.get('longitude')
-        station.cod_inmet = request.form.get('cod_inmet')
+        station.cod_inmet = request.form.get('cod_inmet').upper()
         
         if Station.query.filter_by(mac_address = station.mac_address).first():
             flash('Erro! estação ja cadastrda!','error')
