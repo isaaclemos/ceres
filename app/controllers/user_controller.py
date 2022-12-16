@@ -25,10 +25,7 @@ class UserController:
     def create(self):
         self.create_user()
         return redirect(url_for('admin.user_show'))
-
-    def edit(self, id):
-        user = self.create_user(user_id=id, update=True)
-        return render_template('admin/form_user.html', user=user, title='Atualizar usuario')
+            
 
     def update(self, id):
         self.create_user(user_id=id, update=True)

@@ -40,7 +40,7 @@ class AdminController:
         return self.station_controller.create(user_id)
     
     def station_edit(self, station_id, user_id):
-        return self.station_controller.edit(id=station_id)
+        return self.station_controller.edit(id=station_id,user_id=user_id)
     
     def station_update(self, user_id, station_id):
         return self.station_controller.update(id=station_id)

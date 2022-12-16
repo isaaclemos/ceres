@@ -12,14 +12,16 @@ class StationController:
     def station(self):
 
         stations = current_user.stations
-
         return render_template('user/station.html', title='Estações', stations=stations, date=date.today())
 
     def stations_by_user(self, user_id):
 
         user = User.query.get(user_id)
-
-        return render_template('admin/station.html', title='Estações', stations=user.stations, user=user)
+        
+        if user:
+            return render_template('admin/station.html', title='Estações', stations=user.stations, user=user)
+        else:
+            return redirect(url_for('admin.user_show'))
 
     def create(self, user_id):
 
@@ -37,11 +39,13 @@ class StationController:
 
         return redirect(url_for('admin.stations_by_user', user_id=user_id))
 
-    def edit(self, id):
+    def edit(self, id, user_id):
 
-        station = Station.query.get(id)
-
-        return render_template('admin/form_station.html', title='Estação', station=station)
+        station = Station.query.filter_by(id=id, user_id=user_id).first()
+        if station:
+            return render_template('admin/form_station.html', title='Estação', station=station)
+        else:
+            return redirect(url_for('admin.stations_by_user', user_id=user_id))
 
     def update(self, id):
 
