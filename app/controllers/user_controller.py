@@ -26,7 +26,7 @@ class UserController:
         self.create_user()
         return redirect(url_for('admin.user_show'))
     
-    def edit(self):
+    def edit(self, id):
         user = User.query.get(id)
         
         if user:
