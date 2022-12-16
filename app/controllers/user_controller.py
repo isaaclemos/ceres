@@ -6,19 +6,19 @@ from app.ext.database import db
 from app.models import User
 
 
-class UserController:     
-    
-    before_request=['check_is_authenticated']
-    
+class UserController:
+
+    before_request = ['check_is_authenticated']
+
     @login_required
     def check_is_authenticated(self):
         if not current_user.is_authenticated:
             return redirect(url_for('auth.index'))
-    
-    def index(self):        
+
+    def index(self):
         return render_template('home.html', title='Pagina inicial')
-    
-    def user_show(self):        
+
+    def user_show(self):
         users = User.query.all()
         return render_template('admin/user.html', title='Usuarios', users=users)
 
@@ -26,12 +26,12 @@ class UserController:
         self.create_user()
         return redirect(url_for('admin.user_show'))
 
-    def edit(self,id):
-        user = self.create_user(user_id=id, update=True)                
+    def edit(self, id):
+        user = self.create_user(user_id=id, update=True)
         return render_template('admin/form_user.html', user=user, title='Atualizar usuario')
-    
-    def update(self,id):
-        self.create_user(user_id=id,update=True)
+
+    def update(self, id):
+        self.create_user(user_id=id, update=True)
         return redirect(url_for('admin.user_show'))
 
     def delete(self, id):
@@ -52,16 +52,16 @@ class UserController:
             flash('Usuario não encontrado.', category='error')
 
         return redirect(url_for('admin.user_show'))
-    
+
     def profile(self):
         return render_template('user/profile.html', title='Perfil')
 
     def profile_update(self):
-        
-        self.create_user(id=current_user.id, update=True, profile=True)
+
+        self.create_user(user_id=current_user.id, update=True, profile=True)
         return redirect(url_for('user.index'))
 
-    def create_user(self,user_id=None, update=False, profile=False):
+    def create_user(self, user_id=None, update=False, profile=False):
 
         user_name = request.form.get('user_name')
         email = request.form.get('email')
@@ -79,13 +79,14 @@ class UserController:
                 flash('Endereço de email existente.', category='error')
             elif len(email) < 4:
                 flash('Endereço de email deve possuir no minimo 3 caracteres.',
-                    category='error')
+                      category='error')
             elif len(user_name) < 4:
                 flash('O nome deve possuir no minimo 3 caracteres', category='error')
             elif password1 != password2:
                 flash('As senhas são diferentes.', category='error')
             elif len(password1) < 6:
-                flash('A senha deve possuir no minimo 6 caracteres.', category='error')
+                flash('A senha deve possuir no minimo 6 caracteres.',
+                      category='error')
             else:
 
                 if not update:
@@ -97,9 +98,9 @@ class UserController:
                     user.user_name = user_name
                     user.email = email
                     user.set_password(password1)
-                    user.is_admin = is_admin if profile == False else is_admin
+                    if profile == False:
+                        user.is_admin = is_admin
                     flash('Dados atualizados!', category='success')
                 db.session.commit()
 
         return user
-    

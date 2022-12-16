@@ -3,10 +3,10 @@ from base64 import b64encode
 
 from requests import post
 
-os.chdir(f'{os.path.dirname(__file__)}/original/24:F5:AA:5F:5A:34')
+os.chdir('/home/isaac/ceres1')
 
 
-with open('2017-11-10 19:00:00.jpg', 'rb') as img_file:
+with open('2022-12-15 19:00_median.jpg', 'rb') as img_file:
 
     img_median = b64encode(img_file.read()).decode()
     json = {
@@ -16,8 +16,8 @@ with open('2017-11-10 19:00:00.jpg', 'rb') as img_file:
             'format': 'jpg'
         },
         'csv_thermal': '',
-        'datetime': '2017-11-10 11:00:00'
+        'datetime': '2022-12-15 19:00:00'
     }
 
-    resp = post(url='https://ceres.up.railway.app/api/v1', json=json)
+    resp = post(url='http://localhost:5000/api/v1', json=json)
     print(resp)
