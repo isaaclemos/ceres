@@ -49,7 +49,7 @@ class StationController:
 
         return redirect(url_for('admin.stations_by_user', station_id=id, user_id=station.user_id))
 
-    def create_station(self, id, user_id, update=False):
+    def create_station(self, id, user_id=None, update=False):
 
         mac_address = request.form.get('mac_address').upper()
         altitude = request.form.get('altitude')
@@ -89,6 +89,7 @@ class StationController:
                 flash('Estação cadastrado com sucesso!', 'sucess')
             else:
                 flash('Estação atualizada com sucesso!', 'sucess')
+            
             station.mac_address = mac_address
             station.altitude = altitude
             station.altura = altura
